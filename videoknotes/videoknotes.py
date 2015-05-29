@@ -27,6 +27,11 @@ class VideoKNotesBlock(XBlock):
         css_str = pkg_resources.resource_string(__name__, "static/css/style.css")
         frag.add_css(unicode(css_str))
 
+
+
+        js_swfobj_str = pkg_resources.resource_string(__name__, "static/js/swfobject.js")
+        frag.add_javascript(unicode(js_swfobj))
+
         js_annotations_str = pkg_resources.resource_string(__name__, "static/js/annotations.js")
         frag.add_javascript(unicode(js_annotations_str))
 
@@ -57,6 +62,23 @@ class VideoKNotesBlock(XBlock):
         self.href = data.get('href')
 
         return {'result': 'success'}
+
+    @XBlock.json_handler
+    def post_notes(self, data, suffix=''):
+        """
+        Called upon completion of the video.
+        """
+        if data.get('watched'):
+            self.watched_count += 1
+
+        return {'watched_count': self.watched_count}
+
+    @XBlock.json_handler
+    def update_notes(self, data, suffix=''):
+        """
+        Called upon completion of the video.
+        """
+        return {'watched_count': self.watched_count}
 
     @staticmethod
     def workbench_scenarios():
