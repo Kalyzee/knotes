@@ -5,7 +5,7 @@ from xblock.fields import Scope, Integer, String
 
 from xblock.fragment import Fragment
 
-class VideoAnnotationBlock(XBlock):
+class VideoKNotesBlock(XBlock):
     """
     An XBlock 
     """
@@ -21,7 +21,7 @@ class VideoAnnotationBlock(XBlock):
         to display.
         """
         # Load the HTML fragment from within the package and fill in the template
-        html_str = pkg_resources.resource_string(__name__, "static/html/videoannotation.html")
+        html_str = pkg_resources.resource_string(__name__, "static/html/videoknotes.html")
         frag = Fragment(unicode(html_str).format(self=self, name="ludovic"))
 
         css_str = pkg_resources.resource_string(__name__, "static/css/style.css")
@@ -39,13 +39,13 @@ class VideoAnnotationBlock(XBlock):
         """
         Create a fragment used to display the edit view in the Studio.
         """
-        html_str = pkg_resources.resource_string(__name__, "static/html/videoannotation_edit.html")
+        html_str = pkg_resources.resource_string(__name__, "static/html/videoknotes_edit.html")
         href = self.href or ''
         frag = Fragment(unicode(html_str).format(href=href))
 
-        js_str = pkg_resources.resource_string(__name__, "static/js/videoannotation_edit.js")
+        js_str = pkg_resources.resource_string(__name__, "static/js/videoknotes_edit.js")
         frag.add_javascript(unicode(js_str))
-        frag.initialize_js('VideoAnnotationEditBlock')
+        frag.initialize_js('VideoKNotesEditBlock')
 
         return frag
 
@@ -62,10 +62,10 @@ class VideoAnnotationBlock(XBlock):
     def workbench_scenarios():
         """A canned scenario for display in the workbench."""
         return [
-            ("videoannotation",
+            ("videoknotes",
             """
             <vertical_demo>
-                <videoannotation href="https://vimeo.com/46100581" />
+                <videoknotes href="https://vimeo.com/46100581" />
             </vertical_demo>
             """)
         ]

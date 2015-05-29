@@ -1,4 +1,5 @@
 from django.db import models
+from courseware.models import StudentModule
 
 class TimecodedComment(models.Model):
     student_module = models.ForeignKey(StudentModule)

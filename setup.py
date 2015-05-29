@@ -1,14 +1,14 @@
 from setuptools import setup
 
 setup(
-    name='xblock-videoannotation',
+    name='xblock-videoknotes',
     version='0.1',
-    description='Video annotation',
-    py_modules=['videoannotation'],
+    description='Video notes',
+    py_modules=['videoknotes'],
     install_requires=['XBlock'],
     entry_points={
         'xblock.v1': [
-            'videoannotation = videoannotation:VideoAnnotationBlock',
+            'videoknotes = videoknotes.videoknotes:VideoKNotesBlock',
         ]
     }
 )
