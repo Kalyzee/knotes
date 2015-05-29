@@ -9,11 +9,32 @@ $(document).ready(function(){
     refreshFullViewComment();
         
     var params = {},
+
+    paused = false,
     video = 'x6q96t',
     player = DM.player($('#dmapiplayer').get(0), {video: video, width: '720px', height: '480px', params: params});
     
     player.addEventListener("timeupdate", function(){
         searchAtTime(player.currentTime);
+    });
+
+    $("#videoknotes-pad").keypress(function(event){
+        if ( event.which == 13 ) {
+            $('#videoknotes-pad').contents().filter(function() {
+                return this.nodeType == 3;
+            }).wrap('<p data-time="'+player.currentTime+'""></p>').end();
+            paused = false;
+            player.play();
+            return true;
+
+
+        }else{
+            if (!paused){
+                paused = true;
+                player.pause();
+            }
+
+        }
     });
 
     $("#btn-post-comment").on("click", function(){
