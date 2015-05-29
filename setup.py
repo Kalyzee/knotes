@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='xblock-videoknotes',
-    version='0.1',
+    version='0.2',
     description='Video notes',
     py_modules=['videoknotes'],
     install_requires=['XBlock'],

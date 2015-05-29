@@ -22,7 +22,7 @@ class VideoKNotesBlock(XBlock):
         """
         # Load the HTML fragment from within the package and fill in the template
         html_str = pkg_resources.resource_string(__name__, "static/html/videoknotes.html")
-        frag = Fragment(unicode(html_str).format(self=self, name="ludovic"))
+        frag = Fragment(unicode(html_str).format(self=self, href=self.href))
 
         css_str = pkg_resources.resource_string(__name__, "static/css/style.css")
         frag.add_css(unicode(css_str))
