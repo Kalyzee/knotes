@@ -1,9 +1,18 @@
 import pkg_resources
 
+from pprint import pprint
+
 from xblock.core import XBlock
 from xblock.fields import Scope, Integer, String
 
 from xblock.fragment import Fragment
+from django.contrib.auth.models import User
+
+from opaque_keys.edx.locations import SlashSeparatedCourseKey
+
+
+from .models import TimecodedComment, TimecodedCommentLine
+import json
 
 class VideoKNotesBlock(XBlock):
     """
@@ -20,23 +29,41 @@ class VideoKNotesBlock(XBlock):
         Returns a `Fragment` object specifying the HTML, CSS, and JavaScript
         to display.
         """
+
+        student = User.objects.get(id=self.scope_ids.user_id)
+
+        comment = None
+        try:
+            comment = TimecodedComment.objects.get(student=student, block=self.scope_ids.def_id.block_id)
+        except TimecodedComment.DoesNotExist:
+            comment = TimecodedComment(student=student, block=self.scope_ids.def_id.block_id)
+            comment.save()
+
+
         # Load the HTML fragment from within the package and fill in the template
         html_str = pkg_resources.resource_string(__name__, "static/html/videoknotes.html")
-        frag = Fragment(unicode(html_str).format(self=self, href=self.href))
+        frag = Fragment(unicode(html_str).format(self=self, href=self.href, comment_id=comment.pk))
 
         css_str = pkg_resources.resource_string(__name__, "static/css/style.css")
         frag.add_css(unicode(css_str))
 
+        frag.add_javascript_url("http://api.dmcdn.net/all.js")
 
+
+        js_str = pkg_resources.resource_string(__name__, "static/js/videoknotes.js")
+        frag.add_javascript(unicode(js_str))
+        frag.initialize_js('VideoKNotesBlock')
 
         js_swfobj_str = pkg_resources.resource_string(__name__, "static/js/swfobject.js")
-        frag.add_javascript(unicode(js_swfobj))
+        frag.add_javascript(unicode(js_swfobj_str))
 
         js_annotations_str = pkg_resources.resource_string(__name__, "static/js/annotations.js")
         frag.add_javascript(unicode(js_annotations_str))
 
         js_player_str = pkg_resources.resource_string(__name__, "static/js/player.js")
         frag.add_javascript(unicode(js_player_str))
+
+
 
         return frag
 
@@ -59,26 +86,45 @@ class VideoKNotesBlock(XBlock):
         """
         Called when submitting the form in Studio.
         """
-        self.href = data.get('href')
+        self.href = data.get('id')
 
         return {'result': 'success'}
 
     @XBlock.json_handler
-    def post_notes(self, data, suffix=''):
-        """
-        Called upon completion of the video.
-        """
-        if data.get('watched'):
-            self.watched_count += 1
+    def update_notes(self, data, suffix=""):
+        return {}
 
-        return {'watched_count': self.watched_count}
+
+    @XBlock.json_handler
+    def get_notes(self, data, suffix=''):
+        timecoded = TimecodedComment.objects.get(pk=data.get("comment_id"))
+
+        timecoded_data_set = timecoded.timecodedcommentline_set.order_by("seconds")
+        timecoded_data_array = []
+        for timecoded_data in timecoded_data_set:
+            obj = {"timesec": timecoded_data.seconds, "comment":timecoded_data.content}
+            timecoded_data_array.append(obj)
+        
+        return json.dumps(timecoded_data_array)
+
+    @XBlock.json_handler
+    def post_notes(self, data, suffix=''):
+        timecoded = TimecodedComment.objects.get(pk=data.get("comment_id"))
+        timecoded_content = TimecodedCommentLine(seconds=data.get('seconds'), content=data.get("content"), timecoded_comment=timecoded)
+        timecoded_content.save()
+        return {'result': 'success', 'id' : timecoded_content.pk}
 
     @XBlock.json_handler
     def update_notes(self, data, suffix=''):
         """
         Called upon completion of the video.
         """
-        return {'watched_count': self.watched_count}
+        timecoded = TimecodedCommentLine.objects.get(pk=data.get("pk"))
+        timecoded.content = data.get("content")
+        timecoded.seconds = data.get("seconds")
+        timecoded.save()
+
+        return {'result': 'success'}
 
     @staticmethod
     def workbench_scenarios():

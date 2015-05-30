@@ -5,7 +5,8 @@
  */
 
 $(document).ready(function(){
-    
+
+    var comments = []
     refreshFullViewComment();
         
     var params = {},
