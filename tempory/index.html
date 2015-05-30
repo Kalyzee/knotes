@@ -10,23 +10,19 @@ and open the template in the editor.
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link href="style.css" rel="stylesheet" type="text/css" />
+        <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
     </head>
     <body>
         <div id="dmapiplayer">
             You need Flash player 9+ and JavaScript enabled to view this video.
         </div>
-        <div>
-            <ul id="tool-menu">
-                <li><button id="btn-add" type="button">Add</button></li>
-            </ul>
+        <div id="panel-comment">
+            <h4>Prenez vos notes</h4>
             <div id="post-comment">
-                <textarea placeholder="Votre commentaire"></textarea>
-                <input type="text" name="time_sec" placeholder="Temps (en sec.)" />
-                <input type="text" name="username" placeholder="Username"/>
-                <button type="button" id="btn-post-comment">Add</button>
+                <textarea placeholder="Votre note"></textarea>
             </div>
-            <div id="videoknotes-pad" contenteditable=true>            	
-            </div>
+            <h4>Vos notes</h4>
+            <div id="videoknotes-pad"></div>
         </div>
         <div id="full-view-comment"></div>
         <script type="text/javascript">
