@@ -12,7 +12,7 @@ from opaque_keys.edx.locations import SlashSeparatedCourseKey
 
 
 from .models import TimecodedComment, TimecodedCommentLine
-
+import json
 
 class VideoKNotesBlock(XBlock):
     """
@@ -98,8 +98,14 @@ class VideoKNotesBlock(XBlock):
     @XBlock.json_handler
     def get_notes(self, data, suffix=''):
         timecoded = TimecodedComment.objects.get(pk=data.get("comment_id"))
+
+        timecoded_data_set = timecoded.timecodedcommentline_set.order_by("seconds")
+        timecoded_data_array = []
+        for timecoded_data in timecoded_data_set:
+            obj = {"timesec": timecoded_data.seconds, "comment":timecoded_data.content}
+            timecoded_data_array.append(obj)
         
-        return {}
+        return json.dumps(timecoded_data_array)
 
     @XBlock.json_handler
     def post_notes(self, data, suffix=''):

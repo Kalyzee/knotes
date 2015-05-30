@@ -15,6 +15,15 @@ function VideoKNotesBlock(runtime, element) {
 
     }
 
+    $.ajax({
+            type: "POST",
+            url: runtime.handlerUrl(element, 'get_notes'),
+            data: JSON.stringify({"comment_id":$("#videoknotes-editor").attr("data-id")}),
+            success: function(result) {
+                alert(result);
+            }
+    });
+
     this.save = function(note){
         $.ajax({
             type: "POST",
