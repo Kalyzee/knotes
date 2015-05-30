@@ -28,9 +28,15 @@ class VideoKNotesBlock(XBlock):
         frag.add_css(unicode(css_str))
 
 
+        frag.add_javascript_url("http://api.dmcdn.net/all.js")
+
+
+        js_str = pkg_resources.resource_string(__name__, "static/js/videoknotes.js")
+        frag.add_javascript(unicode(js_str))
+        frag.initialize_js('VideoKNotesBlock')
 
         js_swfobj_str = pkg_resources.resource_string(__name__, "static/js/swfobject.js")
-        frag.add_javascript(unicode(js_swfobj))
+        frag.add_javascript(unicode(js_swfobj_str))
 
         js_annotations_str = pkg_resources.resource_string(__name__, "static/js/annotations.js")
         frag.add_javascript(unicode(js_annotations_str))
