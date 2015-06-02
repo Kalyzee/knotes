@@ -40,7 +40,7 @@ class VideoKNotesBlock(XBlock):
             comment = TimecodedComment(student=student, block=self.scope_ids.def_id.block_id)
             comment.save()
 
-        timecoded_data_set = timecoded.timecodedcommentline_set.order_by("seconds")
+        timecoded_data_set = comment.timecodedcommentline_set.order_by("seconds")
         timecoded_data_array = []
         for timecoded_data in timecoded_data_set:
             obj = {"time_sec": timecoded_data.seconds, "comment":timecoded_data.content, "user":"1", "datetime": "2015-12-10", "is_public": False}
