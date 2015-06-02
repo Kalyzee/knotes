@@ -1,32 +1,35 @@
 function VideoKNotesBlock(runtime, element) {
 
     var _this = this;
-    window.kalyzee = {}
-    window.kalyzee.user = 1;
-    window.kalyzee.video_id                = {};
-    window.kalyzee.config                  = {};
-    window.kalyzee.config.delay_comment    = 5;
-    window.kalyzee.config.first_id         = 0;
-    window.kalyzee.comments                = [];
 
+    var kNotesPlugin;
 
+    function init(){
+        kNotesPlugin = new KNotesPlugin({
+            "onNewNote" : _this.save 
+        } ,"x2e4j6u");
 
-    this.update = function(note){
-
-    }
-
-    $.ajax({
+        $.ajax({
             type: "POST",
             url: runtime.handlerUrl(element, 'get_notes'),
             data: JSON.stringify({"comment_id":$("#videoknotes-editor").attr("data-id")}),
             success: function(results) {
                 results = JSON.parse(results);
                 for (id in results){
-                    window.addComment(results[id]);
+                    kNotesPlugin.addComment(results[id]);
                 }
-                window.refreshFullViewComment();
+                kNotesPlugin.refreshFullViewComment();
             }
-    });
+        });
+
+    }
+
+
+    this.update = function(note){
+
+    }
+
+
 
     this.save = function(note){
         $.ajax({
@@ -39,9 +42,11 @@ function VideoKNotesBlock(runtime, element) {
         });
     }
 
-    window.saved = _this.save;
 
     $("#btn-add").click(function(){
         _this.save({time_sec:10, comment:"test"});
     });
+
+    init();
+
 }

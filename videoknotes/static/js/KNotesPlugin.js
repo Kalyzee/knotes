@@ -1,54 +1,67 @@
 /* 
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * 
+ * 
+ * 
+ *
+ * @param config {
+ *   onNewComment : function(){}
+ * }
+ *
  */
-
-window.comments = [];
-
-$(document).ready(function(){
+function KNotesPlugin(config, video){
     
-
+    var comments = [];    
 
     var params =  {},
         paused = false,
-        video = 'x2e4j6u',
         user = 1,
-        config = {},
-        player = DM.player($('#dmapiplayer').get(0), {video: video, width: '720px', height: '480px', params: params});
+        player = null;
 
-    refreshFullViewComment();    
+    this.refreshFullViewComment();    
     config.delay_comment = 5;
     config.first_id = 0;
-    player.addEventListener("timeupdate", function(){
-        searchAtTime(player.currentTime);
-    });
 
-    $("#post-comment textarea").keyup(function(event){
-        if ( event.which == 13 && !event.shiftKey) {
-            
-            if($(this).val().trim().length > 1){
-                comment = createComment(user, new Date(), player.currentTime, $(this).val(), false);
-                window.saved(comment);
-                addComment(comment);
-                $(this).val("");
+    function initPlayer(){
+        player = DM.player($('#dmapiplayer').get(0), {video: video, width: '720px', height: '480px', params: params}),
+        player.addEventListener("timeupdate", function(){
+            searchAtTime(player.currentTime);
+        });
+    }
+
+    function initKNotesEvents(){
+
+        $("#post-comment textarea").keyup(function(event){
+            if ( event.which == 13 && !event.shiftKey) {
                 
-                paused = false;
-                player.play();
-                return true;
-            }
-        }else{
-            if (!paused){
-                paused = true;
-                player.pause();
-            }
+                if($(this).val().trim().length > 1){
+                    comment = createComment(user, new Date(), player.currentTime, $(this).val(), false);
+                    if (typeof config.onNewNote === "function"){
+                        config.onNewNote(comment);    
+                    }
+                    this.addComment(comment);
+                    $(this).val("");
+                    
+                    paused = false;
+                    player.play();
+                    return true;
+                }
+            }else{
+                if (!paused){
+                    paused = true;
+                    player.pause();
+                }
 
-        }
-    });
+            }
+        });
+
+    }
+
+
+    function init(){
+        initPlayer();
+        initKNotesEvents();
+    }
     
-    $("#videoknotes-pad").on("keypress", "div", function(event){
-        console.log($(this).html());
-    });
     
     function createComment(user, datetime, time_sec, comment, is_public){
         config.first_id++;
@@ -67,7 +80,7 @@ $(document).ready(function(){
         return c;
     }
     
-    function addComment(comment){
+    this.addComment = function(comment){
 
         if(comment.id === undefined){
             comment.id = config.first_id;
@@ -75,24 +88,24 @@ $(document).ready(function(){
         }
 
         comment.elm = createElementNote(comment);
-        window.comments.push(comment);
-        refreshFullViewComment();
+        comments.push(comment);
+        this.refreshFullViewComment();
     }
     
     function searchAtTime(time){
-        for(var c in window.comments){
-            comment = window.comments[c];
+        for(var c in comments){
+            comment = comments[c];
             
             if(time >= comment.time_sec && time < comment.time_sec+config.delay_comment){
                 if(!comment.is_active){
-                    window.comments[c].is_active = true;
-                    refreshComment(window.comments[c]);
+                    comments[c].is_active = true;
+                    refreshComment(comments[c]);
                 }
             }
             else{
-                if(window.comments[c].is_active){
-                    window.comments[c].is_active = false;
-                    refreshComment(window.comments[c]);
+                if(comments[c].is_active){
+                    comments[c].is_active = false;
+                    refreshComment(comments[c]);
                 }
             }
         }
@@ -103,15 +116,14 @@ $(document).ready(function(){
         $("#videoknotes-pad .comment[data-id="+comment.id+"]").replaceWith(comment.elm);
     }
     
-    function refreshFullViewComment(){
+    this.refreshFullViewComment = function(){
         document.getElementById("videoknotes-pad").innerHTML = "";
-        for(var c in window.comments){
-            comment = window.comments[c];
+        for(var c in comments){
+            comment = comments[c];
             document.getElementById('videoknotes-pad').appendChild(comment.elm);
         }
     }
 
-    window.refreshFullViewComment = refreshFullViewComment;
     
     function createElementNote(comment){
         var base                = document.createElement("div");
@@ -170,14 +182,15 @@ $(document).ready(function(){
     }
     
     function changePublic(current_comment){
-        for(var c in window.comments){
-            comment = window.comments[c];
+        for(var c in comments){
+            comment = comments[c];
             if(current_comment.id == comment.id){
-                window.comments[c].is_public = !comment.is_public;
-                refreshComment(window.comments[c]);
+                comments[c].is_public = !comment.is_public;
+                refreshComment(comments[c]);
             }
         }
     }
-    //-- NON DE ZEUS !!!! fix d'urgence ! ---
-    window.addComment = addComment;
-});
+
+    init();
+
+}
