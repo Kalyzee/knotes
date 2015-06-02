@@ -6,6 +6,8 @@
 
 $(document).ready(function(){
     
+    window.comments = [];
+
     refreshFullViewComment();
         
     var params = {},
@@ -62,24 +64,24 @@ $(document).ready(function(){
     
     function addComment(comment){
         comment.elm = createElementNote(comment);
-        comments.push(comment);
+        window.comments.push(comment);
         refreshFullViewComment();
     }
     
     function searchAtTime(time){
-        for(var c in comments){
-            comment = comments[c];
+        for(var c in window.comments){
+            comment = window.comments[c];
             
             if(time >= comment.time_sec && time < comment.time_sec+config.delay_comment){
                 if(!comment.is_active){
-                    comments[c].is_active = true;
-                    refreshComment(comments[c]);
+                    window.comments[c].is_active = true;
+                    refreshComment(window.comments[c]);
                 }
             }
             else{
-                if(comments[c].is_active){
-                    comments[c].is_active = false;
-                    refreshComment(comments[c]);
+                if(window.comments[c].is_active){
+                    window.comments[c].is_active = false;
+                    refreshComment(window.comments[c]);
                 }
             }
         }
@@ -92,8 +94,8 @@ $(document).ready(function(){
     
     function refreshFullViewComment(){
         document.getElementById("videoknotes-pad").innerHTML = "";
-        for(var c in comments){
-            comment = comments[c];
+        for(var c in window.comments){
+            comment = window.comments[c];
             document.getElementById('videoknotes-pad').appendChild(comment.elm);
         }
     }
@@ -155,11 +157,11 @@ $(document).ready(function(){
     }
     
     function changePublic(current_comment){
-        for(var c in comments){
-            comment = comments[c];
+        for(var c in window.comments){
+            comment = window.comments[c];
             if(current_comment.id == comment.id){
-                comments[c].is_public = !comment.is_public;
-                refreshComment(comments[c]);
+                window.comments[c].is_public = !comment.is_public;
+                refreshComment(window.comments[c]);
             }
         }
     }

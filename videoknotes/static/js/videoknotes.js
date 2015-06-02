@@ -19,8 +19,12 @@ function VideoKNotesBlock(runtime, element) {
             type: "POST",
             url: runtime.handlerUrl(element, 'get_notes'),
             data: JSON.stringify({"comment_id":$("#videoknotes-editor").attr("data-id")}),
-            success: function(result) {
-                alert(result);
+            success: function(results) {
+                results = JSON.parse(results);
+                for (id in results){
+                    window.addComment(results[id]);
+                }
+                window.refreshFullViewComment();
             }
     });
 
@@ -34,6 +38,8 @@ function VideoKNotesBlock(runtime, element) {
             }
         });
     }
+
+    window.saved = _this.save;
 
     $("#btn-add").click(function(){
         _this.save({time_sec:10, comment:"test"});

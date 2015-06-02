@@ -33,6 +33,7 @@ class VideoKNotesBlock(XBlock):
         student = User.objects.get(id=self.scope_ids.user_id)
 
         comment = None
+        #TimecodedComment.objects.get(student=student, block=self.scope_ids.def_id.block_id).delete()
         try:
             comment = TimecodedComment.objects.get(student=student, block=self.scope_ids.def_id.block_id)
         except TimecodedComment.DoesNotExist:
@@ -62,8 +63,6 @@ class VideoKNotesBlock(XBlock):
 
         js_player_str = pkg_resources.resource_string(__name__, "static/js/player.js")
         frag.add_javascript(unicode(js_player_str))
-
-
 
         return frag
 
@@ -102,7 +101,7 @@ class VideoKNotesBlock(XBlock):
         timecoded_data_set = timecoded.timecodedcommentline_set.order_by("seconds")
         timecoded_data_array = []
         for timecoded_data in timecoded_data_set:
-            obj = {"timesec": timecoded_data.seconds, "comment":timecoded_data.content}
+            obj = {"time_sec": timecoded_data.seconds, "comment":timecoded_data.content, "user":"1", "datetime": "2015-12-10", "is_public": False}
             timecoded_data_array.append(obj)
         
         return json.dumps(timecoded_data_array)
