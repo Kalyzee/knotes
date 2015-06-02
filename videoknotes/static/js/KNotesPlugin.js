@@ -17,7 +17,6 @@ function KNotesPlugin(config, video){
         user = 1,
         player = null;
 
-    this.refreshFullViewComment();    
     config.delay_comment = 5;
     config.first_id = 0;
 
@@ -58,8 +57,10 @@ function KNotesPlugin(config, video){
 
 
     function init(){
+
         initPlayer();
         initKNotesEvents();
+        this.refreshFullViewComment();    
     }
     
     
