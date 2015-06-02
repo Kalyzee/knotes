@@ -55,7 +55,7 @@ class VideoKNotesBlock(XBlock):
 
         js_str = pkg_resources.resource_string(__name__, "static/js/videoknotes.js")
         frag.add_javascript(unicode(js_str))
-        frag.initialize_js('VideoKNotesBlock')
+        frag.initialize_js('VideoKNotesBlock', {"video" : self.href})
 
         js_swfobj_str = pkg_resources.resource_string(__name__, "static/js/swfobject.js")
         frag.add_javascript(unicode(js_swfobj_str))
