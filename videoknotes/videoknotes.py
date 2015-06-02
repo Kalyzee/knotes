@@ -40,6 +40,13 @@ class VideoKNotesBlock(XBlock):
             comment = TimecodedComment(student=student, block=self.scope_ids.def_id.block_id)
             comment.save()
 
+        timecoded_data_set = timecoded.timecodedcommentline_set.order_by("seconds")
+        timecoded_data_array = []
+        for timecoded_data in timecoded_data_set:
+            obj = {"time_sec": timecoded_data.seconds, "comment":timecoded_data.content, "user":"1", "datetime": "2015-12-10", "is_public": False}
+            timecoded_data_array.append(obj)
+        
+
 
         # Load the HTML fragment from within the package and fill in the template
         html_str = pkg_resources.resource_string(__name__, "static/html/videoknotes.html")
@@ -55,7 +62,7 @@ class VideoKNotesBlock(XBlock):
 
         js_str = pkg_resources.resource_string(__name__, "static/js/videoknotes.js")
         frag.add_javascript(unicode(js_str))
-        frag.initialize_js('VideoKNotesBlock', {"video" : self.href})
+        frag.initialize_js('VideoKNotesBlock', {"video" : self.href, "notes" : timecoded_data_array})
 
         js_swfobj_str = pkg_resources.resource_string(__name__, "static/js/swfobject.js")
         frag.add_javascript(unicode(js_swfobj_str))
@@ -86,18 +93,6 @@ class VideoKNotesBlock(XBlock):
 
         return {'result': 'success'}
 
-
-    @XBlock.json_handler
-    def get_notes(self, data, suffix=''):
-        timecoded = TimecodedComment.objects.get(pk=data.get("comment_id"))
-
-        timecoded_data_set = timecoded.timecodedcommentline_set.order_by("seconds")
-        timecoded_data_array = []
-        for timecoded_data in timecoded_data_set:
-            obj = {"time_sec": timecoded_data.seconds, "comment":timecoded_data.content, "user":"1", "datetime": "2015-12-10", "is_public": False}
-            timecoded_data_array.append(obj)
-        
-        return json.dumps(timecoded_data_array)
 
     @XBlock.json_handler
     def post_notes(self, data, suffix=''):

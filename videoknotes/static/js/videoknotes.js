@@ -11,18 +11,11 @@ function VideoKNotesBlock(runtime, element, init_args) {
             "onNewNote" : _this.save 
         } , init_args.video);
 
-        $.ajax({
-            type: "POST",
-            url: runtime.handlerUrl(element, 'get_notes'),
-            data: JSON.stringify({"comment_id":$("#videoknotes-editor").attr("data-id")}),
-            success: function(results) {
-                results = JSON.parse(results);
-                for (id in results){
-                    kNotesPlugin.addComment(results[id]);
-                }
-                kNotesPlugin.refreshFullViewComment();
-            }
-        });
+
+        results = init_args.notes;
+        for (id in results){
+            kNotesPlugin.addComment(results[id]);
+        }
 
     }
 
