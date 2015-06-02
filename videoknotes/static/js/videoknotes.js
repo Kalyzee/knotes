@@ -43,10 +43,6 @@ function VideoKNotesBlock(runtime, element) {
     }
 
 
-    $("#btn-add").click(function(){
-        _this.save({time_sec:10, comment:"test"});
-    });
-
     init();
 
 }
