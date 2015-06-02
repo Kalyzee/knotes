@@ -19,7 +19,7 @@ class VideoKNotesBlock(XBlock):
     An XBlock 
     """
 
-    href = String(help="Dailymotion Video", default=None, scope=Scope.content)
+    href = String(help="Dailymotion Video", default="x2e4j6u", scope=Scope.content)
 
     def student_view(self, context):
         """
@@ -82,13 +82,9 @@ class VideoKNotesBlock(XBlock):
         """
         Called when submitting the form in Studio.
         """
-        self.href = data.get('id')
+        self.href = data.get('href')
 
         return {'result': 'success'}
-
-    @XBlock.json_handler
-    def update_notes(self, data, suffix=""):
-        return {}
 
 
     @XBlock.json_handler

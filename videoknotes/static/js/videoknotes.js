@@ -9,7 +9,7 @@ function VideoKNotesBlock(runtime, element, init_args) {
     function init(){
         kNotesPlugin = new KNotesPlugin({
             "onNewNote" : _this.save 
-        } ,"x2e4j6u");
+        } , init_args.video);
 
         $.ajax({
             type: "POST",
