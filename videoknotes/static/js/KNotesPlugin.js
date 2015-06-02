@@ -15,7 +15,8 @@ function KNotesPlugin(config, video){
     var params =  {},
         paused = false,
         user = 1,
-        player = null;
+        player = null, 
+        _this = this;
 
     config.delay_comment = 5;
     config.first_id = 0;
@@ -37,7 +38,7 @@ function KNotesPlugin(config, video){
                     if (typeof config.onNewNote === "function"){
                         config.onNewNote(comment);    
                     }
-                    this.addComment(comment);
+                    _this.addComment(comment);
                     $(this).val("");
                     
                     paused = false;
@@ -60,7 +61,7 @@ function KNotesPlugin(config, video){
 
         initPlayer();
         initKNotesEvents();
-        this.refreshFullViewComment();    
+        _this.refreshFullViewComment();    
     }
     
     
@@ -90,7 +91,7 @@ function KNotesPlugin(config, video){
 
         comment.elm = createElementNote(comment);
         comments.push(comment);
-        this.refreshFullViewComment();
+        _this.refreshFullViewComment();
     }
     
     function searchAtTime(time){
