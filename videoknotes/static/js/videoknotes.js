@@ -1,4 +1,6 @@
-function VideoKNotesBlock(runtime, element) {
+function VideoKNotesBlock(runtime, element, init_args) {
+
+    console.log(init_args);
 
     var _this = this;
 
