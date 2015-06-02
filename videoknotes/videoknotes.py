@@ -61,9 +61,6 @@ class VideoKNotesBlock(XBlock):
         frag.add_javascript(unicode(js_swfobj_str))
 
 
-        js_player_str = pkg_resources.resource_string(__name__, "static/js/player.js")
-        frag.add_javascript(unicode(js_player_str))
-
         return frag
 
     def studio_view(self, context):

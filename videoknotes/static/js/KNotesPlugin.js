@@ -4,7 +4,7 @@
  * 
  *
  * @param config {
- *   onNewComment : function(){}
+ *   onNewNote : function(){}
  * }
  *
  */
