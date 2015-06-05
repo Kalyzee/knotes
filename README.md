@@ -25,7 +25,7 @@ INSTALLED_APPS += ('videoknotes',)
 After that it's necessary to setup database.
 
 ```
-./manage.py syncdb --settings=videoknotes.settings
+./manage.py syncdb
 ```
 
 ## Enabling in Studio
