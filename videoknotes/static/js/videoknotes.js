@@ -1,15 +1,17 @@
 function VideoKNotesBlock(runtime, element, init_args) {
 
-    console.log(init_args);
-
     var _this = this;
 
     var kNotesPlugin;
 
     function init(){
         kNotesPlugin = new KNotesPlugin({
-            "onNewNote" : _this.save 
-        } , init_args.video);
+            "onNewNote" : _this.save,
+            "onDeleteNote" : _this.delete,
+            "onUpdateNote" : _this.update,
+            "video"     :  init_args.video,
+            "element"   :  element
+        });
 
 
         results = init_args.notes;
@@ -21,10 +23,29 @@ function VideoKNotesBlock(runtime, element, init_args) {
 
 
     this.update = function(note){
+      $.ajax({
+          type: "POST",
+          url: runtime.handlerUrl(element, 'update_notes'),
+          data: JSON.stringify({"pk":note.id, "content": note.comment}),
+          success: function(result) {
+              console.log(result);
+          }
+      });
 
     }
 
+    this.delete = function(note){
+      console.log(note);
 
+      $.ajax({
+          type: "POST",
+          url: runtime.handlerUrl(element, 'delete_notes'),
+          data: JSON.stringify({"pk":note.id}),
+          success: function(result) {
+              console.log(result);
+          }
+      });
+    }
 
     this.save = function(note){
         $.ajax({

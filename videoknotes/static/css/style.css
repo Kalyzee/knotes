@@ -1,4 +1,4 @@
-#panel-comment{
+.panel-comment{
     border: 2px solid #24d1c4;
     border-radius: 2px;
     width: 706px;
@@ -8,19 +8,19 @@
     padding: 3px;
     background-color: #EEE;
 }
-#post-comment{
+.post-comment{
     //padding: 5px;
 }
-#post-comment textarea, #videoknotes-pad{
+.post-comment textarea, .videoknotes-pad{
     padding: 3px;
 }
-#post-comment textarea{
+.post-comment textarea{
     width: 683px;
     border: 1px solid #CCC;
     border-radius: 5px;
     height: 50px;
 }
-#videoknotes-pad{
+.videoknotes-pad{
     overflow-y: auto;
     height: 200px;
     background-color: #FFF;
@@ -29,22 +29,22 @@
     border-radius: 3px;
 }
 
-#videoknotes-pad .comment{
+.videoknotes-pad .comment{
     padding: 5px;
     border:1px solid #DDD;
     margin-bottom: 2px;
 }
-#videoknotes-pad .comment .part{
+.videoknotes-pad .comment .part{
     display: inline-block;
     margin-right: 5px;
 }
 
-#videoknotes-pad .comment .time-part{
+.videoknotes-pad .comment .time-part{
     width: 50px;
     margin-left: 10px;
 }
 
-#videoknotes-pad .comment .tool-part button{
+.videoknotes-pad .comment .tool-part button{
     height: 30px;
     width: 30px;
     background-color: #EEE;
@@ -53,12 +53,12 @@
     margin-left: 5px;
 }
 
-#videoknotes-pad .comment .comment-part{
-    width: 515px;
+.videoknotes-pad .comment .comment-part{
+    width: 500px;
     vertical-align: text-top;
 }
 
-#videoknotes-pad .comment.active {
+.videoknotes-pad .comment.active {
     background-color: #DBF9FF;
     border: 1px solid #24d1c4;
     color: #333;

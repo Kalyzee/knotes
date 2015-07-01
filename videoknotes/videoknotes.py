@@ -16,7 +16,7 @@ import json
 
 class VideoKNotesBlock(XBlock):
     """
-    An XBlock 
+    An XBlock
     """
 
     href = String(help="Dailymotion Video", default="x2e4j6u", scope=Scope.content)
@@ -43,9 +43,9 @@ class VideoKNotesBlock(XBlock):
         timecoded_data_set = comment.timecodedcommentline_set.order_by("seconds")
         timecoded_data_array = []
         for timecoded_data in timecoded_data_set:
-            obj = {"time_sec": timecoded_data.seconds, "comment":timecoded_data.content, "user":"1", "datetime": "2015-12-10", "is_public": False}
+            obj = {"time_sec": timecoded_data.seconds, "comment":timecoded_data.content, "user":"1", "datetime": "2015-12-10", "is_public": False, "id": timecoded_data.id}
             timecoded_data_array.append(obj)
-        
+
 
 
         # Load the HTML fragment from within the package and fill in the template
@@ -108,9 +108,18 @@ class VideoKNotesBlock(XBlock):
         """
         timecoded = TimecodedCommentLine.objects.get(pk=data.get("pk"))
         timecoded.content = data.get("content")
-        timecoded.seconds = data.get("seconds")
         timecoded.save()
 
+        return {'result': 'success'}
+
+
+    @XBlock.json_handler
+    def delete_notes(self, data, suffix=''):
+        """
+        Called upon completion of the video.
+        """
+        timecoded = TimecodedCommentLine.objects.get(pk=data.get("pk"))
+        timecoded.delete()
         return {'result': 'success'}
 
     @staticmethod
