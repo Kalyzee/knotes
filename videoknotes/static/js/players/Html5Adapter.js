@@ -1,0 +1,3 @@
+function Html5Adpater(){
+  
+}

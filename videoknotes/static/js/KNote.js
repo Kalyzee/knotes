@@ -1,0 +1,7 @@
+/*
+* Knote Model
+*
+*/
+function KNote(){
+    
+}
