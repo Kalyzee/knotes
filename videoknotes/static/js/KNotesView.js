@@ -4,7 +4,10 @@
 */
 function KNoteView(){
     
-    this.createNote(note){
+    var listeners = new KNotesListener();
+    var _this = this;
+
+    this.createNote = function(note){
       var base                = document.createElement("div");
       base.setAttribute("class", "comment");
       base.setAttribute("data-id", comment.id);
@@ -25,15 +28,15 @@ function KNoteView(){
       toolBar.setAttribute("class", "tool-part part");
 
       toolBar.appendChild(createButton("Lire", "fa-play", "btn-play", function(){
-        alert("LISTENER PLAY");
+        _this.firePlayNote();
       }));
 
       toolBar.appendChild(createButton("Modifier", "fa-edit", "btn-update", function(){
-        alert("LISTENER Update");
+        _this.fireUpdateNote();
       }));;
 
       toolBar.appendChild(createButton("Supprimer", "fa-remove", "btn-delete", function(){
-        alert("LISTENER Delete");
+        _this.fireDeleteNote();
       }));
 
       return toolBar;
@@ -73,4 +76,71 @@ function KNoteView(){
       commentPart.innerHTML  = text;
       return commentPart;
     }
+
+    /*
+    * Method called when a user save a note
+    */
+    var fireSaveNote = function(){
+      listeners.fireListeners("onSaveNote", function(callback){
+
+      });
+    }
+
+    /*
+    * Method to add a callback when the user save a specific note
+    */
+    this.onSaveNote = function(callback){
+      listeners.addlisteners("onSaveNote", callback);
+    }
+
+    /*
+    * Method to add a callback when the user push play on a specific note
+    */
+    this.onPlayNote = function(callback){
+      listeners.addlisteners("onPlayNote", callback);
+    }
+
+    /*
+    * Method called when a user click on a note
+    */
+    var firePlayNote = function(){
+      listeners.fireListeners("onPlayNote", function(callback){
+
+      });
+    }
+
+    /*
+    * Method to add a callback when the user click on update on a specific note
+    */
+    this.onUpdateNote = function(callback){
+      listeners.addlisteners("onUpdateNote", callback);
+    }
+
+    /*
+    * Method called when a user click on update note button
+    */
+    var fireUpdateNote = function(){
+      listeners.fireListeners("onUpdateNote", function(callback){
+
+      });
+    }
+
+    /*
+    * Method to add a callback when the user click on delete on a specific note
+    */
+    this.onDeleteNote = function(callback){
+      listeners.addlisteners("onDeleteNote", callback);
+    }
+
+
+    /*
+    * Method called when a user click on delete note button
+    */
+    var fireDeleteNote = function(){
+      listeners.fireListeners("onDeleteNote", function(callback){
+
+      });
+    }    
+
+
 }

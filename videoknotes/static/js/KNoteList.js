@@ -3,6 +3,11 @@
 *
 */
 function KNoteList(){
+  
+
+  var listeners = new KNotesListener(),
+      _this = this;
+
 
   this.add = function(note){
 

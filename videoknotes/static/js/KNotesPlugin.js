@@ -12,17 +12,19 @@
  */
 function KNotesPlugin(config){
 
+
     var comments = [];
 
-    var params =  {},
+    var listeners = new KNotesListener(),
+        params =  {},
         paused = false,
         user = 1,
         player = null,
         _this = this,
         element = config.element,
-        video   = config.video
-        currentComment = null;
-        config.delay_comment = 5;
+        video   = config.video,
+        currentComment = null,
+        config.delay_comment = 5,
         config.first_id = 0;
 
     
