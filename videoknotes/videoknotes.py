@@ -43,7 +43,7 @@ class VideoKNotesBlock(XBlock):
         timecoded_data_set = comment.timecodedcommentline_set.order_by("seconds")
         timecoded_data_array = []
         for timecoded_data in timecoded_data_set:
-            obj = {"time_sec": timecoded_data.seconds, "comment":timecoded_data.content, "user":"1", "datetime": "2015-12-10", "is_public": False, "id": timecoded_data.id}
+            obj = {"time_sec": timecoded_data.seconds, "comment":timecoded_data.content, "user": self.scope_ids.user_id , "datetime": "2015-12-10", "is_public": False, "id": timecoded_data.id}
             timecoded_data_array.append(obj)
 
 
@@ -96,10 +96,16 @@ class VideoKNotesBlock(XBlock):
 
     @XBlock.json_handler
     def post_notes(self, data, suffix=''):
-        timecoded = TimecodedComment.objects.get(pk=data.get("comment_id"))
-        timecoded_content = TimecodedCommentLine(seconds=data.get('seconds'), content=data.get("content"), timecoded_comment=timecoded)
-        timecoded_content.save()
-        return {'result': 'success', 'id' : timecoded_content.pk}
+        student = User.objects.get(id=self.scope_ids.user_id)
+        timecoded = TimecodedComment.objects.get(student=student, block=self.scope_ids.def_id.block_id)
+
+        if (timecoded.student.pk == self.scope_ids.user_id):
+            timecoded_content = TimecodedCommentLine(seconds=data.get('seconds'), content=data.get("content"), timecoded_comment=timecoded)
+            timecoded_content.save()            
+            return {'result': 'success', 'id' : timecoded_content.pk}
+        else: 
+            return {'error': 'bad creadential'}
+
 
     @XBlock.json_handler
     def update_notes(self, data, suffix=''):
@@ -107,10 +113,12 @@ class VideoKNotesBlock(XBlock):
         Called upon completion of the video.
         """
         timecoded = TimecodedCommentLine.objects.get(pk=data.get("pk"))
-        timecoded.content = data.get("content")
-        timecoded.save()
-
-        return {'result': 'success'}
+        if (timecoded.timecoded_comment.student.pk == self.scope_ids.user_id):
+            timecoded.content = data.get("content")
+            timecoded.save()
+            return {'result': 'success'}
+        else :
+            return {'error': 'bad creadential'}
 
 
     @XBlock.json_handler
@@ -119,8 +127,12 @@ class VideoKNotesBlock(XBlock):
         Called upon completion of the video.
         """
         timecoded = TimecodedCommentLine.objects.get(pk=data.get("pk"))
-        timecoded.delete()
-        return {'result': 'success'}
+        if (timecoded.timecoded_comment.student.pk == self.scope_ids.user_id):
+            timecoded.delete()
+            return {'result': 'success'}
+        else:
+            return {'error': 'bad creadential'}
+
 
     @staticmethod
     def workbench_scenarios():

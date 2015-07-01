@@ -22,11 +22,10 @@ function KNotesPlugin(config){
         element = config.element,
         video   = config.video
         currentComment = null;
+        config.delay_comment = 5;
+        config.first_id = 0;
 
-
-
-    config.delay_comment = 5;
-    config.first_id = 0;
+    
 
     function initPlayer(){
         player = DM.player($(element).children(".player").get(0), {video: config.video, width: '720px', height: '480px', params: params}),
