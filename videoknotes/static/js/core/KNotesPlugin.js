@@ -19,60 +19,53 @@ function KNotesPlugin(config){
         params =  {},
         paused = false,
         user = 1,
-        player = null,
         _this = this,
         element = config.element,
         video   = config.video,
-        currentComment = null,
-        config.delay_comment = 5,
+        currentComment = null;
+
+        config.delay_comment = 5;
         config.first_id = 0;
+
+
+        var _this = this,
+            _player = null,
+            _view = new KNotesView(element),
+            _list = new KNotesList();
+
+
 
     
 
     function initPlayer(){
-        player = DM.player($(element).children(".player").get(0), {video: config.video, width: '720px', height: '480px', params: params}),
-        player.addEventListener("timeupdate", function(){
+        _player = new DailymotionAdapter($(element).children(".player").get(0), config.video);
+        _player.createPlayerView();
+        _player.onTimeUpdate(function(time){
             searchAtTime(player.currentTime);
         });
     }
 
     function initKNotesEvents(){
+        _view.initViewEvents();
+        _view.onBeginEditNote(function(){
+            _player.pause();
 
-        $(element).find(".post-comment textarea").keyup(function(event){
-            if ( event.which == 13 && !event.shiftKey) {
-
-                if($(this).val().trim().length > 1){
-                    if (currentComment == null){
-                      // In this case this is new note !!!
-                      comment = createComment(user, new Date(), player.currentTime, $(this).val(), false);
-                      if (typeof config.onNewNote === "function"){
-                          config.onNewNote(comment);
-                      }
-                      _this.addComment(comment);
-                      $(this).val("");
-
-                      paused = false;
-                      player.play();
-                      return true;
-                    }else{
-                      // In this case we'll update an note  !!!
-                      currentComment.comment = $(this).val().replace('\n', '<br />');;
-                      config.onUpdateNote(currentComment);
-                      _this.addComment(currentComment);
-                      currentComment = null;
-                      $(this).val("");
-                      paused = false;
-                      player.play();
-                    }
-                }
-            }else{
-                if (!paused){
-                    paused = true;
-                    player.pause();
-                }
-
-            }
         });
+
+        _view.onSaveNote(function(note){
+            _view.cleanNoteField();
+            _player.play();
+            _list.add(new KNote(-1, _player.getCurrentTime(), ));
+        });
+
+        _list.onAdd(function(note){
+            _view.createNote(note);
+        });
+
+
+        _list.onRemove(function(){
+            
+        });       
 
     }
 

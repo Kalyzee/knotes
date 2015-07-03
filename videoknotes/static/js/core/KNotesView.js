@@ -2,25 +2,53 @@
 * Knotes View
 *
 */
-function KNoteView(){
+function KNotesView(element){
     
     var listeners = new KNotesListener();
     var _this = this;
+    var _element = element;
+
+    var _edition = false;
+
+    var _noteField = $(_element).find(".post-comment textarea");
+    var _notePad   = $(element).find(".videoknotes-pad");
+
+
+    this.initViewEvents = function(){
+        _noteField.keyup(function(event){
+            if ( event.which == 13 && !event.shiftKey) {
+                if($(this).val().trim().length > 1){
+                  _edition = false;
+                  fireSaveNote();
+                }
+            }else{
+                if (_edition == false){
+                  _edition = true;
+                  fireBeginEditNote();
+                }
+
+            }
+        });
+    }
+
+    this.cleanNoteField = function(){
+        $(_noteField).val("");
+    }
 
     this.createNote = function(note){
       var base                = document.createElement("div");
       base.setAttribute("class", "comment");
-      base.setAttribute("data-id", comment.id);
+      base.setAttribute("data-id", note.getId());
 
-      if(comment.is_active){
+      if(note.isActive()){
           base.setAttribute("class", "comment active");
       }
 
       base.appendChild(createNoteToolBar());
-      base.appendChild(createTimeBar());
-      base.appendChild(createCommentPart());
+      base.appendChild(createTimeBar(note.getTime()));
+      base.appendChild(createCommentPart(note.getValue()));
 
-      return base;
+      $(_notePad).append(base);
     }
 
     var createNoteToolBar = function(){
@@ -43,14 +71,14 @@ function KNoteView(){
     }
 
 
-    var createTimeBar = function(){
+    var createTimeBar = function(time){
       var timePart           = document.createElement("div");
       timePart.setAttribute("class", "time-part part");
 
       var fontAwesomeClock = document.createElement("i");
-      i.setAttribute("class", "fa fa-clock-o");
+      fontAwesomeClock.setAttribute("class", "fa fa-clock-o");
       timePart.appendChild(fontAwesomeClock);
-      timePart.appendChild(document.createTextNode(comment.time_sec));
+      timePart.appendChild(document.createTextNode(time));
 
       return timePart;
     }
@@ -77,12 +105,34 @@ function KNoteView(){
       return commentPart;
     }
 
+
+
+
+
+    /*
+    * Method called when a user save a note
+    */
+    var fireBeginEditNote = function(){
+      listeners.fireListeners("onBeginEditNote", function(callback){
+        callback();
+      });
+    }
+
+    /*
+    * Method to add a callback when the user save a specific note
+    */
+    this.onBeginEditNote = function(callback){
+      listeners.addlisteners("onBeginEditNote", callback);
+    }
+
+
+
     /*
     * Method called when a user save a note
     */
     var fireSaveNote = function(){
       listeners.fireListeners("onSaveNote", function(callback){
-
+        callback();
       });
     }
 
@@ -105,7 +155,7 @@ function KNoteView(){
     */
     var firePlayNote = function(){
       listeners.fireListeners("onPlayNote", function(callback){
-
+          callback();
       });
     }
 
@@ -121,7 +171,7 @@ function KNoteView(){
     */
     var fireUpdateNote = function(){
       listeners.fireListeners("onUpdateNote", function(callback){
-
+          callback();
       });
     }
 
@@ -138,7 +188,7 @@ function KNoteView(){
     */
     var fireDeleteNote = function(){
       listeners.fireListeners("onDeleteNote", function(callback){
-
+        callback();
       });
     }    
 

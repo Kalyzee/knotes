@@ -57,15 +57,18 @@ class VideoKNotesBlock(XBlock):
 
         frag.add_javascript_url("http://api.dmcdn.net/all.js")
 
-        js_annotations_str = pkg_resources.resource_string(__name__, "static/js/KNotesPlugin.js")
-        frag.add_javascript(unicode(js_annotations_str))
+        javascript_array = ["static/js/core/KNotesListener.js", "static/js/core/KNote.js", 
+            "static/js/core/KNotesIterator.js", "static/js/core/KNotesList.js", "static/js/players/DailymotionAdapter.js",
+            "static/js/core/KNotesView.js", "static/js/core/KNotesPlugin.js", 
+            "static/vendors/swfobject.js"]
+
+        for element in javascript_array:
+            js_str = pkg_resources.resource_string(__name__, element)
+            frag.add_javascript(unicode(js_str))
 
         js_str = pkg_resources.resource_string(__name__, "static/js/videoknotes.js")
         frag.add_javascript(unicode(js_str))
         frag.initialize_js('VideoKNotesBlock', {"video" : self.href, "notes" : timecoded_data_array})
-
-        js_swfobj_str = pkg_resources.resource_string(__name__, "static/js/swfobject.js")
-        frag.add_javascript(unicode(js_swfobj_str))
 
 
         return frag
@@ -104,7 +107,7 @@ class VideoKNotesBlock(XBlock):
             timecoded_content.save()            
             return {'result': 'success', 'id' : timecoded_content.pk}
         else: 
-            return {'error': 'bad creadential'}
+            return {'error': 'bad credential'}
 
 
     @XBlock.json_handler
@@ -118,7 +121,7 @@ class VideoKNotesBlock(XBlock):
             timecoded.save()
             return {'result': 'success'}
         else :
-            return {'error': 'bad creadential'}
+            return {'error': 'bad credential'}
 
 
     @XBlock.json_handler
@@ -131,7 +134,7 @@ class VideoKNotesBlock(XBlock):
             timecoded.delete()
             return {'result': 'success'}
         else:
-            return {'error': 'bad creadential'}
+            return {'error': 'bad credential'}
 
 
     @staticmethod
