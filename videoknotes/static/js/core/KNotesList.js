@@ -2,7 +2,7 @@
 * Manage note list
 *
 */
-function KNotesList(){
+function KNotesList(initialValues){
   
 
     var listeners = new KNotesListener(),
@@ -10,18 +10,27 @@ function KNotesList(){
         list = [],
         _this = this;
 
-
+    var init = function(){
+        for (i in initialValues){
+            add(initialValues[i]);
+        }
+    }
 
     this.iterator = function(){
         return new KNoteIterator(list);
     }
 
-    this.add = function(note){
 
-        if (list[note.getTime()] === undefined){
+    var add = function(note){
+         if (list[note.getTime()] === undefined){
             list[note.getTime()] = [];
         }
         list[note.getTime()].push(note);
+    }
+
+    this.add = function(note){
+
+        add(note);
         fireAdd(note);
     }
 
@@ -69,4 +78,5 @@ function KNotesList(){
       });
     }    
     
+    init();
 }

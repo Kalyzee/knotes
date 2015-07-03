@@ -10,14 +10,10 @@ function VideoKNotesBlock(runtime, element, init_args) {
             "onDeleteNote" : _this.delete,
             "onUpdateNote" : _this.update,
             "video"     :  init_args.video,
-            "element"   :  element
+            "element"   :  element,
+            "notes"     : init_args.notes,
         });
 
-
-        results = init_args.notes;
-        for (id in results){
-            kNotesPlugin.addComment(results[id]);
-        }
 
     }
 

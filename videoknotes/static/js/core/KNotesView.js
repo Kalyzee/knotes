@@ -19,7 +19,7 @@ function KNotesView(element){
             if ( event.which == 13 && !event.shiftKey) {
                 if($(this).val().trim().length > 1){
                   _edition = false;
-                  fireSaveNote();
+                  fireSaveNote({"value" : $(this).val()});
                 }
             }else{
                 if (_edition == false){
@@ -38,33 +38,33 @@ function KNotesView(element){
     this.createNote = function(note){
       var base                = document.createElement("div");
       base.setAttribute("class", "comment");
-      base.setAttribute("data-id", note.getId());
+      base.setAttribute("data-id", note.id);
 
-      if(note.isActive()){
+      if(note.active){
           base.setAttribute("class", "comment active");
       }
 
-      base.appendChild(createNoteToolBar());
-      base.appendChild(createTimeBar(note.getTime()));
-      base.appendChild(createCommentPart(note.getValue()));
+      base.appendChild(createNoteToolBar(note));
+      base.appendChild(createTimeBar(note.time));
+      base.appendChild(createCommentPart(note.value));
 
       $(_notePad).append(base);
     }
 
-    var createNoteToolBar = function(){
+    var createNoteToolBar = function(note){
       var toolBar           = document.createElement("div");
       toolBar.setAttribute("class", "tool-part part");
 
       toolBar.appendChild(createButton("Lire", "fa-play", "btn-play", function(){
-        _this.firePlayNote();
+        firePlayNote(note);
       }));
 
       toolBar.appendChild(createButton("Modifier", "fa-edit", "btn-update", function(){
-        _this.fireUpdateNote();
+        fireUpdateNote(note);
       }));;
 
       toolBar.appendChild(createButton("Supprimer", "fa-remove", "btn-delete", function(){
-        _this.fireDeleteNote();
+        fireRemoveNote(note);
       }));
 
       return toolBar;
@@ -130,9 +130,9 @@ function KNotesView(element){
     /*
     * Method called when a user save a note
     */
-    var fireSaveNote = function(){
+    var fireSaveNote = function(note){
       listeners.fireListeners("onSaveNote", function(callback){
-        callback();
+        callback(note);
       });
     }
 
@@ -153,9 +153,9 @@ function KNotesView(element){
     /*
     * Method called when a user click on a note
     */
-    var firePlayNote = function(){
+    var firePlayNote = function(note){
       listeners.fireListeners("onPlayNote", function(callback){
-          callback();
+          callback(note);
       });
     }
 
@@ -169,26 +169,26 @@ function KNotesView(element){
     /*
     * Method called when a user click on update note button
     */
-    var fireUpdateNote = function(){
+    var fireUpdateNote = function(note){
       listeners.fireListeners("onUpdateNote", function(callback){
-          callback();
+          callback(note);
       });
     }
 
     /*
     * Method to add a callback when the user click on delete on a specific note
     */
-    this.onDeleteNote = function(callback){
-      listeners.addlisteners("onDeleteNote", callback);
+    this.onRemoveNote = function(callback){
+      listeners.addlisteners("onRemoveNote", callback);
     }
 
 
     /*
     * Method called when a user click on delete note button
     */
-    var fireDeleteNote = function(){
-      listeners.fireListeners("onDeleteNote", function(callback){
-        callback();
+    var fireRemoveNote = function(note){
+      listeners.fireListeners("onRemoveNote", function(callback){
+        callback(note);
       });
     }    
 

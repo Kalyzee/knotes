@@ -31,8 +31,8 @@ function KNotesPlugin(config){
         var _this = this,
             _player = null,
             _view = new KNotesView(element),
-            _list = new KNotesList();
-
+            _list = null;
+            _currentNote = null;
 
 
     
@@ -46,6 +46,15 @@ function KNotesPlugin(config){
     }
 
     function initKNotesEvents(){
+        
+        var array = [];
+        for ( n in config.notes){
+            var note = config.notes[n];
+            array.push(new KNote(note.id, note.time, note.value));
+        }
+
+        _list = new KNotesList(array);
+
         _view.initViewEvents();
         _view.onBeginEditNote(function(){
             _player.pause();
@@ -55,12 +64,33 @@ function KNotesPlugin(config){
         _view.onSaveNote(function(note){
             _view.cleanNoteField();
             _player.play();
-            _list.add(new KNote(-1, _player.getCurrentTime(), ));
+            _list.add(new KNote(-1, _player.getCurrentTime(), note.value));
+        });
+
+
+        _view.onPlayNote(function(note){
+            _player.seek(note.time);
+        });
+
+        _view.onUpdateNote(function(note){
+
+        });
+
+        _view.onRemoveNote(function(note){
+
         });
 
         _list.onAdd(function(note){
-            _view.createNote(note);
+            _view.createNote({"value" : note.getValue(), "id": note.getId(), "time": note.getTime(), "active" : note.isActive()});
         });
+
+        var iterator = _list.iterator();
+        console.log(iterator.hasNext());
+        while(iterator.hasNext()){
+            var note = iterator.next();
+            _view.createNote({"value" : note.getValue(), "id": note.getId(), "time": note.getTime(), "active" : note.isActive()});
+
+        }
 
 
         _list.onRemove(function(){
