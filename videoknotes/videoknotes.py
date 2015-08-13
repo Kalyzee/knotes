@@ -59,6 +59,7 @@ class VideoKNotesBlock(XBlock):
 
         javascript_array = ["static/js/core/KNotesListener.js", "static/js/core/KNote.js", 
             "static/js/core/KNotesIterator.js", "static/js/core/KNotesList.js", "static/js/players/DailymotionAdapter.js",
+            "static/js/players/YoutubeAdapter.js", "static/js/players/PlayerFactory.js",
             "static/js/core/KNotesView.js", "static/js/core/KNotesPlugin.js", 
             "static/vendors/swfobject.js"]
 

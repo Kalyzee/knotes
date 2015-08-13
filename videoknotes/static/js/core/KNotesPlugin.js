@@ -38,7 +38,7 @@ function KNotesPlugin(config){
     
 
     function initPlayer(){
-        _player = new DailymotionAdapter($(element).children(".player").get(0), config.video);
+        _player = new PlayerFactory($(element).children(".player").get(0), config.video);
         _player.createPlayerView();
         _player.onTimeUpdate(function(time){
             searchAtTime(player.currentTime);
