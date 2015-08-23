@@ -56,6 +56,8 @@ class VideoKNotesBlock(XBlock):
         frag.add_css(unicode(css_str))
 
         frag.add_javascript_url("http://api.dmcdn.net/all.js")
+        frag.add_javascript_url("https://www.youtube.com/iframe_api")
+
 
         javascript_array = ["static/js/core/KNotesListener.js", "static/js/core/KNote.js", 
             "static/js/core/KNotesIterator.js", "static/js/core/KNotesList.js", "static/js/players/DailymotionAdapter.js",

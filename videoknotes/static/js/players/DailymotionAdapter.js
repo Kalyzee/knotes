@@ -1,5 +1,6 @@
 function DailymotionAdapter(element, video){
 
+
     var listeners = new KNotesListener(),
         _this = this;
 
@@ -20,7 +21,8 @@ function DailymotionAdapter(element, video){
     }
 
     this.createPlayerView = function(){
-        player = DM.player(element, {"video": video, width: '720px', height: '480px', params: {} }),
+        var videoID = _this.getVideoID(video);
+        player = DM.player(element, {"video": videoID, width: '720px', height: '480px', params: {} }),
         player.addEventListener("timeupdate", function(){
             fireTimeUpdate(player.currentTime);
         });
@@ -35,5 +37,21 @@ function DailymotionAdapter(element, video){
         callback(time);
       });
     }
+
+    this.getVideoID = function(videoURL){
+      
+      var videoURLMatch = videoURL.match(DailymotionAdapter.regExp);
+      var videoID = null;
+      if (videoURLMatch != null){
+        videoID = videoURLMatch[1];
+      }
+      return videoID;
+    }
+
+}
+
+
+DailymotionAdapter.regExp = "[[http|https]://]{0,1}www.dailymotion.com\/video\/(.+)"
+DailymotionAdapter.isCompatible = function(videoURL){
 
 }
