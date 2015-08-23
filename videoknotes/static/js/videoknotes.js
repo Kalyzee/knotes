@@ -7,7 +7,7 @@ function VideoKNotesBlock(runtime, element, init_args) {
     function init(){
         kNotesPlugin = new KNotesPlugin({
             "onNewNote" : _this.save,
-            "onDeleteNote" : _this.delete,
+            "onRemoveNote" : _this.remove,
             "onUpdateNote" : _this.update,
             "video"     :  init_args.video,
             "element"   :  element,
@@ -18,38 +18,44 @@ function VideoKNotesBlock(runtime, element, init_args) {
     }
 
 
-    this.update = function(note){
+    this.update = function(note, callback){
       $.ajax({
           type: "POST",
           url: runtime.handlerUrl(element, 'update_notes'),
-          data: JSON.stringify({"pk":note.id, "content": note.comment}),
+          data: JSON.stringify({"pk":note.getId(), "content": note.getValue()}),
           success: function(result) {
-              console.log(result);
+              if(callback){
+                callback(result);
+              }
           }
       });
 
     }
 
-    this.delete = function(note){
+    this.remove = function(note, callback){
       console.log(note);
 
       $.ajax({
           type: "POST",
           url: runtime.handlerUrl(element, 'delete_notes'),
-          data: JSON.stringify({"pk":note.id}),
+          data: JSON.stringify({"pk":note.getId()}),
           success: function(result) {
-              console.log(result);
+            if(callback){
+              callback(result);
+            }
           }
       });
     }
 
-    this.save = function(note){
+    this.save = function(note, callback){
         $.ajax({
             type: "POST",
             url: runtime.handlerUrl(element, 'post_notes'),
-            data: JSON.stringify({"seconds":note.time_sec, "content":note.comment, "comment_id":$("#videoknotes-editor").attr("data-id")}),
+            data: JSON.stringify({"seconds":note.getTime(), "content":note.getValue()}),
             success: function(result) {
-                console.log(result);
+              if (callback){
+                callback(result);
+              }
             }
         });
     }

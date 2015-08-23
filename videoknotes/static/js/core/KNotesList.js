@@ -5,9 +5,9 @@
 function KNotesList(initialValues){
   
 
-    var listeners = new KNotesListener(),
-        objectsById = {},
-        list = [],
+    var _listeners = new KNotesListener(),
+        _objectsById = [],
+        _list = [],
         _this = this;
 
     var init = function(){
@@ -17,15 +17,16 @@ function KNotesList(initialValues){
     }
 
     this.iterator = function(){
-        return new KNoteIterator(list);
+        return new KNoteIterator(_list);
     }
 
 
     var add = function(note){
-         if (list[note.getTime()] === undefined){
-            list[note.getTime()] = [];
+         if (_list[note.getTime()] === undefined){
+            _list[note.getTime()] = [];
         }
-        list[note.getTime()].push(note);
+        _objectsById[note.getId()] = note;
+        _list[note.getTime()].push(note);
     }
 
     this.add = function(note){
@@ -35,12 +36,15 @@ function KNotesList(initialValues){
     }
 
     this.remove = function(note){
-        fireDelete(note);
+        _objectsById.splice(note.getId(),1);
+        _list[note.getTime()].splice(_list[note.getTime()].indexOf(note), 1);
+        fireRemove(note);
     }
 
 
-    this.getById = function(){
-
+    this.getById = function(id){
+        console.log(_objectsById[id]);
+        return _objectsById[id];
     }
 
 
@@ -48,7 +52,7 @@ function KNotesList(initialValues){
     * Method to add a callback when the user click on delete on a specific note
     */
     this.onAdd = function(callback){
-      listeners.addlisteners("onAdd", callback);
+      _listeners.addlisteners("onAdd", callback);
     }
 
 
@@ -56,7 +60,7 @@ function KNotesList(initialValues){
     * Method called when a user click on delete note button
     */
     var fireAdd = function(note){
-      listeners.fireListeners("onAdd", function(callback){
+      _listeners.fireListeners("onAdd", function(callback){
         callback(note);
       });
     }    
@@ -65,7 +69,7 @@ function KNotesList(initialValues){
     * Method to add a callback when the user click on delete on a specific note
     */
     this.onRemove = function(callback){
-      listeners.addlisteners("onRemove", callback);
+      _listeners.addlisteners("onRemove", callback);
     }
 
 
@@ -73,7 +77,7 @@ function KNotesList(initialValues){
     * Method called when a user click on delete note button
     */
     var fireRemove = function(note){
-      listeners.fireListeners("onRemove", function(callback){
+      _listeners.fireListeners("onRemove", function(callback){
         callback(note);
       });
     }    

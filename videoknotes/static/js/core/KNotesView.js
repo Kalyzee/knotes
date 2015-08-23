@@ -35,6 +35,24 @@ function KNotesView(element){
         $(_noteField).val("");
     }
 
+
+    this.setNoteField = function(text){
+      $(_noteField).val(text);
+    }
+
+    this.updateNoteById = function(id, text){
+      $(".comment[data-id="+id+"] .comment-part").html(text);
+    }
+
+    this.removeNoteById = function(id){
+      $(".comment[data-id="+id+"]").remove();
+    }
+
+
+    this.clearNotes = function(){
+      $(_notePad).val("");
+
+    }
     this.createNote = function(note){
       var base                = document.createElement("div");
       base.setAttribute("class", "comment");
@@ -104,8 +122,6 @@ function KNotesView(element){
       commentPart.innerHTML  = text;
       return commentPart;
     }
-
-
 
 
 
@@ -191,6 +207,8 @@ function KNotesView(element){
         callback(note);
       });
     }    
+
+
 
 
 }

@@ -36,10 +36,10 @@ function KNoteIterator(list){
     var setPointerAtNextPosition = function(){
         
         var pointerPosition = getNextPointerPosition();
-        
         if (pointerPosition != null){
             _currentTimePosition = pointerPosition.timePosition;
             _currentObjectPosition = pointerPosition.objectPosition;
+            return true;
         }else{
             return null;    
         }
