@@ -77,7 +77,7 @@ function KNotesPlugin(config){
                     });
                 }
             }else{
-                var note = new KNote(-1, _player.getCurrentTime(), note.value);
+                var note = new KNote(-1, Math.floor(_player.getCurrentTime()), note.value);
                 if(config.onNewNote){
                     config.onNewNote(note, function(result){
                     if(result.result = "success"){
@@ -138,10 +138,12 @@ function KNotesPlugin(config){
     function redraw(){
         _view.clearNotes();
         var iterator = _list.iterator();
+        var i = 0;
         while(iterator.hasNext()){
+            console.log(i);
             var note = iterator.next();
             _view.createNote({"value" : note.getValue(), "id": note.getId(), "time": note.getTime(), "active" : note.isActive()});
-
+            i++;
         }        
     }
 

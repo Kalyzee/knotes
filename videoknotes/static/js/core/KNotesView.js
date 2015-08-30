@@ -50,7 +50,8 @@ function KNotesView(element){
 
 
     this.clearNotes = function(){
-      $(_notePad).val("");
+
+      $(_notePad).html("");
 
     }
     this.createNote = function(note){

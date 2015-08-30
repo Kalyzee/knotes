@@ -21,11 +21,12 @@ function KNoteIterator(list){
             currentObjectPosition = 0;
         }
 
-        while ( _list[currentTimePosition] === undefined &&  currentTimePosition <= _list.length ){
+        while ( _list[currentTimePosition] === undefined &&  currentTimePosition < _list.length ){
             currentTimePosition++;
         }
 
-        if(currentTimePosition <= _list.length){
+
+        if(currentTimePosition >= _list.length){
             return null;
         }else{
             return { "timePosition" : currentTimePosition, "objectPosition" : currentObjectPosition };

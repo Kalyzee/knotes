@@ -25,8 +25,15 @@ function KNotesList(initialValues){
          if (_list[note.getTime()] === undefined){
             _list[note.getTime()] = [];
         }
+
+        console.log("TIME ON ADDING");
+        console.log(note.getTime());
+
+        
         _objectsById[note.getId()] = note;
         _list[note.getTime()].push(note);
+        console.log("NOW COUNT " + _list.length);
+
     }
 
     this.add = function(note){
@@ -36,17 +43,18 @@ function KNotesList(initialValues){
     }
 
     this.remove = function(note){
-        _objectsById.splice(note.getId(),1);
+        delete _objectsById[note.getId()];
         _list[note.getTime()].splice(_list[note.getTime()].indexOf(note), 1);
         fireRemove(note);
     }
 
 
     this.getById = function(id){
-        console.log(_objectsById[id]);
         return _objectsById[id];
     }
 
+
+    
 
     /*
     * Method to add a callback when the user click on delete on a specific note
