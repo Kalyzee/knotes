@@ -24,15 +24,9 @@ function KNotesList(initialValues){
     var add = function(note){
          if (_list[note.getTime()] === undefined){
             _list[note.getTime()] = [];
-        }
-
-        console.log("TIME ON ADDING");
-        console.log(note.getTime());
-
-        
+        }        
         _objectsById[note.getId()] = note;
         _list[note.getTime()].push(note);
-        console.log("NOW COUNT " + _list.length);
 
     }
 
@@ -53,8 +47,38 @@ function KNotesList(initialValues){
         return _objectsById[id];
     }
 
+    /**
+    *   Get all notes for a specified time
+    */ 
+    this.getByTime = function(time){
+        var notesAtTime = _list[time];
+        if( notesAtTime === undefined){
+            notesAtTime = null;
+        }
+        return notesAtTime;
+    }
 
-    
+    /*
+    *   Get all by notes by time interval
+    *   
+    *   If you want to get a note in interval beetween 5 and 15 seconds
+    *   getByInterval(10, 5);
+    *
+    *   -- TODO -- We need to optimise this method to 
+    */  
+    this.getByInterval = function(timeBegin, period){
+        
+        var result = [];
+        var i;
+        beginValue = Math.max(0,timeBegin-period);
+        for (i = beginValue; i<=timeBegin+period; i++){
+            var resultAtTime = _this.getByTime(i);
+            if (resultAtTime !== null ){
+                 result = result.concat(resultAtTime);
+            }
+        }
+        return result;
+    }
 
     /*
     * Method to add a callback when the user click on delete on a specific note

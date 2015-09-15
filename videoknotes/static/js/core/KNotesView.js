@@ -48,6 +48,15 @@ function KNotesView(element){
       $(".comment[data-id="+id+"]").remove();
     }
 
+    /**
+    * Color note with specified ID
+    */
+    this.colorNotes = function(ids){
+      $(_element).find(".comment.active").removeClass("active");
+      for (key in ids){
+        $(_element).find(".comment[data-id="+ids[key]+"]").addClass("active");
+      }
+    }
 
     this.clearNotes = function(){
 
