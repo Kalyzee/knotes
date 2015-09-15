@@ -9,6 +9,7 @@ from xblock.fragment import Fragment
 from django.contrib.auth.models import User
 
 from opaque_keys.edx.locations import SlashSeparatedCourseKey
+import csv
 
 
 from .models import KNoteList, KNote
@@ -16,35 +17,39 @@ import json
 
 class VideoKNotesBlock(XBlock):
     """
-    An XBlock
+    VideoKNotesBlock allows the users to create comments timecoded (means comments can be located in time).
+    Users can export all visible comments as CSV.
+    Owners can share their comment when they mark them as public.
+    Student can comment as private.
     """
 
     href = String(help="Dailymotion Video", default="x2e4j6u", scope=Scope.content)
 
     def student_view(self, context):
         """
-        Create a fragment used to display the XBlock to a student.
-        `context` is a dictionary used to configure the display (unused).
-
-        Returns a `Fragment` object specifying the HTML, CSS, and JavaScript
-        to display.
+        Show all knotes for the current user and the owner(s) which are in public state.
         """
 
         student = User.objects.get(id=self.scope_ids.user_id)
 
         comment = None
         #KNoteList.objects.get(student=student, block=self.scope_ids.def_id.block_id).delete()
+        """ Try to find the last KnoteList or create one """
         try:
             comment = KNoteList.objects.get(user=student, block=self.scope_ids.def_id.block_id)
         except KNoteList.DoesNotExist:
             comment = KNoteList(user=student, block=self.scope_ids.def_id.block_id)
             comment.save()
-
-        timecoded_data_set = comment.KNote_set.order_by("seconds")
+            
+	"""Find all knotes ordered by seconds"""
+	
+        timecoded_data_set = comment.knote_set.order_by("seconds")
         timecoded_data_array = []
         for timecoded_data in timecoded_data_set:
-            obj = {"time": timecoded_data.seconds, "value":timecoded_data.content, "user": self.scope_ids.user_id , "datetime": "2015-12-10", "is_public": False, "id": timecoded_data.id}
-            timecoded_data_array.append(obj)
+        	"""Convert Knote objects (python) to Knote objects (Javascript) """
+        	
+        	obj = {"time": timecoded_data.seconds, "value":timecoded_data.content, "user": self.scope_ids.user_id , "datetime": "2015-12-10", "is_public": False, "id": timecoded_data.id}
+        	timecoded_data_array.append(obj)
 
 
 
@@ -138,8 +143,24 @@ class VideoKNotesBlock(XBlock):
             return {'result': 'success'}
         else:
             return {'error': 'bad credential'}
-
-
+            
+    @XBlock.json_handler    
+    def export_notes(self, data, suffix=''):
+        """
+        Called upon completion of the video.
+        """
+        
+        fname = self.scope_ids.user_id+".csv"
+        file = open(fname, "wb")
+        writer = csv.writer(file)
+        
+        timecoded_data_set = comment.knote_set.order_by("seconds")
+        timecoded_data_array = []
+        for timecoded_data in timecoded_data_set:
+        	if (timecoded_data.timecoded_comment.user.pk == self.scope_ids.user_id):
+        		writer.writerow(timecoded_data.seconds, timecoded_data.content, self.scope_ids.user_id , timecoded_data.id)
+		return {'result': 'success'}
+            
     @staticmethod
     def workbench_scenarios():
         """A canned scenario for display in the workbench."""
