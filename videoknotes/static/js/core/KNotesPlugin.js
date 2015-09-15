@@ -41,7 +41,7 @@ function KNotesPlugin(config){
         _player = new PlayerFactory($(element).children(".player").get(0), config.video);
         _player.createPlayerView();
         _player.onTimeUpdate(function(time){
-            searchAtTime(player.currentTime);
+            searchAtTime(time);
         });
     }
 
@@ -130,9 +130,19 @@ function KNotesPlugin(config){
         initKNotesEvents();
     }
 
+    /**
+    *   TODO Optimization to not make for on each onTimePlayer
+    *   New strategie will store the next note time in variable to iterate only if a note exists.
+    */
     function searchAtTime(time){
-
-
+        ids = [];
+        var notesAtTime = _list.getByInterval(Math.round(time), config.delay_comment);
+        if (notesAtTime != null){
+            for (key in notesAtTime){
+                ids.push(notesAtTime[key].getId());
+            }   
+        }
+        _view.colorNotes(ids);
     }
 
     function redraw(){
@@ -140,7 +150,6 @@ function KNotesPlugin(config){
         var iterator = _list.iterator();
         var i = 0;
         while(iterator.hasNext()){
-            console.log(i);
             var note = iterator.next();
             _view.createNote({"value" : note.getValue(), "id": note.getId(), "time": note.getTime(), "active" : note.isActive()});
             i++;
