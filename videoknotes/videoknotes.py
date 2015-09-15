@@ -11,7 +11,7 @@ from django.contrib.auth.models import User
 from opaque_keys.edx.locations import SlashSeparatedCourseKey
 
 
-from .models import TimecodedComment, TimecodedCommentLine
+from .models import KNoteList, KNote
 import json
 
 class VideoKNotesBlock(XBlock):
@@ -33,14 +33,14 @@ class VideoKNotesBlock(XBlock):
         student = User.objects.get(id=self.scope_ids.user_id)
 
         comment = None
-        #TimecodedComment.objects.get(student=student, block=self.scope_ids.def_id.block_id).delete()
+        #KNoteList.objects.get(student=student, block=self.scope_ids.def_id.block_id).delete()
         try:
-            comment = TimecodedComment.objects.get(student=student, block=self.scope_ids.def_id.block_id)
-        except TimecodedComment.DoesNotExist:
-            comment = TimecodedComment(student=student, block=self.scope_ids.def_id.block_id)
+            comment = KNoteList.objects.get(user=student, block=self.scope_ids.def_id.block_id)
+        except KNoteList.DoesNotExist:
+            comment = KNoteList(user=student, block=self.scope_ids.def_id.block_id)
             comment.save()
 
-        timecoded_data_set = comment.timecodedcommentline_set.order_by("seconds")
+        timecoded_data_set = comment.KNote_set.order_by("seconds")
         timecoded_data_array = []
         for timecoded_data in timecoded_data_set:
             obj = {"time": timecoded_data.seconds, "value":timecoded_data.content, "user": self.scope_ids.user_id , "datetime": "2015-12-10", "is_public": False, "id": timecoded_data.id}
@@ -103,10 +103,10 @@ class VideoKNotesBlock(XBlock):
     @XBlock.json_handler
     def post_notes(self, data, suffix=''):
         student = User.objects.get(id=self.scope_ids.user_id)
-        timecoded = TimecodedComment.objects.get(student=student, block=self.scope_ids.def_id.block_id)
+        timecoded = KNoteList.objects.get(user=student, block=self.scope_ids.def_id.block_id)
 
-        if (timecoded.student.pk == self.scope_ids.user_id):
-            timecoded_content = TimecodedCommentLine(seconds=data.get('seconds'), content=data.get("content"), timecoded_comment=timecoded)
+        if (timecoded.user.pk == self.scope_ids.user_id):
+            timecoded_content = KNote(seconds=data.get('seconds'), content=data.get("content"), timecoded_comment=timecoded)
             timecoded_content.save()            
             return {'result': 'success', 'id' : timecoded_content.pk}
         else: 
@@ -118,8 +118,8 @@ class VideoKNotesBlock(XBlock):
         """
         Called upon completion of the video.
         """
-        timecoded = TimecodedCommentLine.objects.get(pk=data.get("pk"))
-        if (timecoded.timecoded_comment.student.pk == self.scope_ids.user_id):
+        timecoded = KNote.objects.get(pk=data.get("pk"))
+        if (timecoded.timecoded_comment.user.pk == self.scope_ids.user_id):
             timecoded.content = data.get("content")
             timecoded.save()
             return {'result': 'success'}
@@ -132,8 +132,8 @@ class VideoKNotesBlock(XBlock):
         """
         Called upon completion of the video.
         """
-        timecoded = TimecodedCommentLine.objects.get(pk=data.get("pk"))
-        if (timecoded.timecoded_comment.student.pk == self.scope_ids.user_id):
+        timecoded = KNote.objects.get(pk=data.get("pk"))
+        if (timecoded.timecoded_comment.user.pk == self.scope_ids.user_id):
             timecoded.delete()
             return {'result': 'success'}
         else:
