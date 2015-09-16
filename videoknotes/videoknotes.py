@@ -10,10 +10,11 @@ from django.contrib.auth.models import User
 
 from opaque_keys.edx.locations import SlashSeparatedCourseKey
 import csv
-
+from webob import Response
 
 from .models import KNoteList, KNote
 import json
+import functools
 
 class VideoKNotesBlock(XBlock):
     """
@@ -143,24 +144,35 @@ class VideoKNotesBlock(XBlock):
             return {'result': 'success'}
         else:
             return {'error': 'bad credential'}
-            
-    @XBlock.json_handler    
-    def export_notes(self, data, suffix=''):
+        
+    @XBlock.handler
+    def export_notes(self, request, suffix=''):
         """
         Called upon completion of the video.
         """
-        
-        fname = self.scope_ids.user_id+".csv"
-        file = open(fname, "wb")
-        writer = csv.writer(file)
+        student = User.objects.get(id=self.scope_ids.user_id)
+
+        comment = None
+        #KNoteList.objects.get(student=student, block=self.scope_ids.def_id.block_id).delete()
+        """ Try to find the last KnoteList or create one """
+        try:
+            comment = KNoteList.objects.get(user=student, block=self.scope_ids.def_id.block_id)
+        except KNoteList.DoesNotExist:
+            comment = KNoteList(user=student, block=self.scope_ids.def_id.block_id)
+            comment.save()
+
+        res = Response()
+        res.headerlist = [('Content-type', 'application/force-download'), ('Content-Disposition', 'attachment; filename=%s' % str(self.scope_ids.user_id)+".csv")]
+        writer = csv.writer(res)
         
         timecoded_data_set = comment.knote_set.order_by("seconds")
         timecoded_data_array = []
         for timecoded_data in timecoded_data_set:
         	if (timecoded_data.timecoded_comment.user.pk == self.scope_ids.user_id):
-        		writer.writerow(timecoded_data.seconds, timecoded_data.content, self.scope_ids.user_id , timecoded_data.id)
-		return {'result': 'success'}
-            
+        		writer.writerow([timecoded_data.seconds, timecoded_data.content, self.scope_ids.user_id , timecoded_data.id])
+        
+        return res
+
     @staticmethod
     def workbench_scenarios():
         """A canned scenario for display in the workbench."""
