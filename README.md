@@ -37,3 +37,47 @@ To enable this KNotes into your course you have to :
 
 ## Developping player adapters
 
+```
+function MyPlayerAdapter(element, video){
+
+
+    var listeners = new KNotesListener(),
+        _this = this;
+
+    this.getCurrentTime = function(){
+
+    }
+
+    this.play = function(){
+
+    }
+
+    this.pause = function(){
+
+    }
+
+    this.seek = function(time){
+
+    }
+
+    this.createPlayerView = function(){
+
+    }
+
+    this.onTimeUpdate = function(callback){
+      listeners.addlisteners("onTimeUpdate", callback);
+    }
+
+    var fireTimeUpdate = function(time){
+      listeners.fireListeners("onTimeUpdate", function(callback){
+        callback(time);
+      });
+    }
+
+}
+
+
+MyPlayerAdapter.isCompatible = function(videoURL){
+
+}
+```
