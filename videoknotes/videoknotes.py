@@ -23,7 +23,7 @@ class VideoKNotesBlock(XBlock):
     Student can comment as private.
     """
 
-    href = String(help="Dailymotion Video", default="x2e4j6u", scope=Scope.content)
+    href = String(help="Video URL", default="http://www.dailymotion.com/video/x2e4j6u", scope=Scope.content)
 
     def student_view(self, context):
         """
@@ -149,6 +149,7 @@ class VideoKNotesBlock(XBlock):
         """
         Called upon completion of the video.
         """
+        res = Response()
         student = User.objects.get(id=self.scope_ids.user_id)
 
         comment = None
@@ -156,21 +157,20 @@ class VideoKNotesBlock(XBlock):
         """ Try to find the last KnoteList or create one """
         try:
             comment = KNoteList.objects.get(user=student, block=self.scope_ids.def_id.block_id)
-        except KNoteList.DoesNotExist:
-            comment = KNoteList(user=student, block=self.scope_ids.def_id.block_id)
-            comment.save()
 
-        res = Response()
-        res.headerlist = [('Content-type', 'application/force-download'), ('Content-Disposition', 'attachment; filename=%s' % str(self.scope_ids.user_id)+".csv")]
-        writer = csv.writer(res)
-        
-        timecoded_data_set = comment.knote_set.order_by("seconds")
-        timecoded_data_array = []
-        for timecoded_data in timecoded_data_set:
-        	if (timecoded_data.timecoded_comment.user.pk == self.scope_ids.user_id):
-        		writer.writerow([timecoded_data.seconds, timecoded_data.content, self.scope_ids.user_id , timecoded_data.id])
-        
-        return res
+            res.headerlist = [('Content-type', 'application/force-download'), ('Content-Disposition', 'attachment; filename=%s' % str(self.scope_ids.user_id)+".csv")]
+            writer = csv.writer(res)
+            
+            timecoded_data_set = comment.knote_set.order_by("seconds")
+            timecoded_data_array = []
+            for timecoded_data in timecoded_data_set:
+            	if (timecoded_data.timecoded_comment.user.pk == self.scope_ids.user_id):
+            		writer.writerow([timecoded_data.seconds, timecoded_data.content, self.scope_ids.user_id , timecoded_data.id])
+            
+            return res
+        except KNoteList.DoesNotExist:
+            res.status = 404
+            return Response()
 
     @staticmethod
     def workbench_scenarios():

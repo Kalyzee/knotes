@@ -12,11 +12,15 @@ function VideoKNotesBlock(runtime, element, init_args) {
             "video"     :  init_args.video,
             "element"   :  element,
             "notes"     : init_args.notes,
+            "onExportNotes" : _this.exportNotes
         });
 
 
     }
 
+    this.exportNotes = function(){
+      window.open(runtime.handlerUrl(element, 'export_notes'));
+    }
 
     this.update = function(note, callback){
       $.ajax({

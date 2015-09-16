@@ -102,6 +102,11 @@ function KNotesPlugin(config){
             _currentNote = _list.getById(note.id);
         });
 
+        _view.onExportNotes(function(){
+            if(config.onExportNotes)
+                config.onExportNotes();
+        }); 
+
         _view.onRemoveNote(function(note){
             if(config.onRemoveNote){
                 var note = _list.getById(note.id);

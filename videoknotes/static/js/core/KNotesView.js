@@ -13,6 +13,7 @@ function KNotesView(element){
     var _noteField = $(_element).find(".post-comment textarea");
     var _notePad   = $(element).find(".videoknotes-pad");
 
+    var _downloadButton = $(element).find(".download-button");
 
     this.initViewEvents = function(){
         _noteField.keyup(function(event){
@@ -28,6 +29,10 @@ function KNotesView(element){
                 }
 
             }
+        });
+
+        _downloadButton.click(function(){
+          fireExportNotes();
         });
     }
 
@@ -217,6 +222,24 @@ function KNotesView(element){
         callback(note);
       });
     }    
+
+
+    /*
+    * Method to add a callback when the user click on download button
+    */
+    this.onExportNotes = function(callback){
+      listeners.addlisteners("onExportNotes", callback);
+    }
+
+
+    /*
+    * Method called when the user click on download button
+    */
+    var fireExportNotes = function(){
+      listeners.fireListeners("onExportNotes", function(callback){
+        callback();
+      });
+    }        
 
 
 
