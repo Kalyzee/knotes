@@ -8,7 +8,6 @@ from xblock.fields import Scope, Integer, String
 from xblock.fragment import Fragment
 from django.contrib.auth.models import User
 
-from opaque_keys.edx.locations import SlashSeparatedCourseKey
 import csv
 
 

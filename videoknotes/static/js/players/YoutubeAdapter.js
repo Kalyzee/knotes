@@ -19,26 +19,36 @@ function YoutubeAdapter(element, video){
       player.seekTo(time);
     }
 
+
     this.createPlayerView = function(){
-        player = new YT.Player(element, {
-            height: '480',
-            width: '720',
-            videoId: getVideoId()
-        });
         
-        var t; 
-        player.addEventListener("onStateChange", function(e){
-            if(e.data === 1){
-                t = setInterval(function(){ 
-                    var time;
-                    time = player.getCurrentTime();
-                    fireTimeUpdate(time);
-                }, 100);
+        if (YT == undefined || YT.Player == undefined){
+
+            window.onYouTubePlayerAPIReady = function(){
+                _this.createPlayerView();
             }
-            else {
-                clearInterval(t);
-            }
-        });        
+        }else{
+                player = new YT.Player(element, {
+                    height: '480',
+                    width: '720',
+                    videoId: getVideoId()
+                });
+                
+                var t; 
+                player.addEventListener("onStateChange", function(e){
+                    if(e.data === 1){
+                        t = setInterval(function(){ 
+                            var time;
+                            time = player.getCurrentTime();
+                            fireTimeUpdate(time);
+                        }, 100);
+                    }
+                    else {
+                        clearInterval(t);
+                    }
+                });      
+        }
+    
     }
 
     this.onTimeUpdate = function(callback){
