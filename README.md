@@ -4,30 +4,47 @@ This XBLock allows student taking notes from video.
 
 ![](http://www.kalyzee.com/wp-content/uploads/2015/06/CGQ-VDNWgAAYd3F.png)
 
+This readme explains how to deploy KNotes in devstack environment. We assume you have latest devstack from edx installed and vagrant configured (and launched). More information available at : https://github.com/edx/configuration/wiki/edX-Developer-Stack
+
 # Installation guide
 
-In /edx/app/edxapp with edxapp user create a directory my-apps
+Connect you to your VM with :
+```
+vagrant ssh.
+```
 
-In /edx/app/edxapp/my-apps
-git clone https://github.com/Kalyzee/knotes.git
-
-source /edx/app/edxapp/venvs/bin/activate
-
-cd knotes
-
-
-To install this plugin you need to be in the python virtual environement of your edx-platform and execute this command from this Xblock folder
+Connect you with edxapp user
 
 ```
-$ pip install -r requirements.txt
+sudo su edxapp
+```
+
+Now we are going to create an apps directory in /edx/app/edxapp which will store the knotes app
+- In /edx/app/edxapp with edxapp user create a directory my-apps
+
+``` 
+ cd /edx/app/edxapp
+ mkdir my-apps
+ cd my-apps
+```
+
+Now we will clone the knotes github repository in /edx/app/edxapp/my-apps
+``` 
+git clone https://github.com/Kalyzee/knotes.git
+``` 
+
+We activate the openedx venv and installing knotes
+```
+source /edx/app/edxapp/venvs/edxapp/bin/activate
+cd knotes
+pip install -r requirements.txt
 ```
 
 ## Database configuration / installation
 
 You have to add into edx settings file 
  
- 
-For dev environment you have to add at the end of /edx/app/edxapp/edx-platform/cms/envs/devstack.py and  /edx/app/edxapp/edx-platform/cms/envs/devstack.py
+For dev environment you have to add at the end of /edx/app/edxapp/edx-platform/cms/envs/devstack.py and  /edx/app/edxapp/edx-platform/lms/envs/devstack.py
 
 ```python
 
@@ -38,11 +55,15 @@ INSTALLED_APPS += ('videoknotes',)
 After that it's necessary to setup database.
 
 ```
+cd /edx/app/edxapp/edx-platform
 ./manage.py lms syncdb --settings=devstack
 ```
 
 Restart your edx
-
+```
+ cd /edx/app/edxapp/edx-platform
+ paver devstack cms
+```
 ## Enabling in Studio
 
 To enable this KNotes into your course you have to :
