@@ -5,15 +5,22 @@ from pprint import pprint
 from xblock.core import XBlock
 from xblock.fields import Scope, Integer, String
 
+from student.auth import has_studio_write_access
+
 from xblock.fragment import Fragment
 from django.contrib.auth.models import User
 
 import csv
 from webob import Response
 
+from django.db.models import Q
+
 from .models import KNoteList, KNote
 import json
 import functools
+import hashlib
+
+from pprint import pprint
 
 class VideoKNotesBlock(XBlock):
     """
@@ -29,6 +36,8 @@ class VideoKNotesBlock(XBlock):
         """
         Show all knotes for the current user and the owner(s) which are in public state.
         """
+        print "HELLO"
+        pprint(self.scope_ids.usage_id)
 
         student = User.objects.get(id=self.scope_ids.user_id)
 
@@ -36,20 +45,19 @@ class VideoKNotesBlock(XBlock):
         #KNoteList.objects.get(student=student, block=self.scope_ids.def_id.block_id).delete()
         """ Try to find the last KnoteList or create one """
         try:
-            comment = KNoteList.objects.get(user=student, block=self.scope_ids.def_id.block_id)
+            comment = KNoteList.objects.get(user=student, block=self.__get_xblock_key())
         except KNoteList.DoesNotExist:
-            comment = KNoteList(user=student, block=self.scope_ids.def_id.block_id)
+            comment = KNoteList(user=student, block=self.__get_xblock_key())
             comment.save()
             
-	"""Find all knotes ordered by seconds"""
-	
-        timecoded_data_set = comment.knote_set.order_by("seconds")
+        """Find all knotes ordered by seconds"""
+        timecoded_data_set = KNote.objects.filter( Q(timecoded_comment=comment) | (Q(is_public=True) & Q(timecoded_comment__block=self.__get_xblock_key()))).order_by("seconds")
         timecoded_data_array = []
         for timecoded_data in timecoded_data_set:
-        	"""Convert Knote objects (python) to Knote objects (Javascript) """
-        	
-        	obj = {"time": timecoded_data.seconds, "value":timecoded_data.content, "user": self.scope_ids.user_id , "datetime": "2015-12-10", "is_public": False, "id": timecoded_data.id}
-        	timecoded_data_array.append(obj)
+            """Convert Knote objects (python) to Knote objects (Javascript) """
+            
+            obj = {"time": timecoded_data.seconds, "value":timecoded_data.content, "user": self.scope_ids.user_id , "datetime": "2015-12-10", "is_public": timecoded_data.is_public, "is_mine": (self.scope_ids.user_id == timecoded_data.timecoded_comment.user.pk) , "id": timecoded_data.id}
+            timecoded_data_array.append(obj)
 
 
 
@@ -76,7 +84,7 @@ class VideoKNotesBlock(XBlock):
 
         js_str = pkg_resources.resource_string(__name__, "static/js/videoknotes.js")
         frag.add_javascript(unicode(js_str))
-        frag.initialize_js('VideoKNotesBlock', {"video" : self.href, "notes" : timecoded_data_array})
+        frag.initialize_js('VideoKNotesBlock', {"video" : self.href, "notes" : timecoded_data_array, "can_publish" : has_studio_write_access(student, self.scope_ids.usage_id.course_key)})
 
 
         return frag
@@ -108,7 +116,7 @@ class VideoKNotesBlock(XBlock):
     @XBlock.json_handler
     def post_notes(self, data, suffix=''):
         student = User.objects.get(id=self.scope_ids.user_id)
-        timecoded = KNoteList.objects.get(user=student, block=self.scope_ids.def_id.block_id)
+        timecoded = KNoteList.objects.get(user=student, block=self.__get_xblock_key())
 
         if (timecoded.user.pk == self.scope_ids.user_id):
             timecoded_content = KNote(seconds=data.get('seconds'), content=data.get("content"), timecoded_comment=timecoded)
@@ -164,13 +172,19 @@ class VideoKNotesBlock(XBlock):
             timecoded_data_set = comment.knote_set.order_by("seconds")
             timecoded_data_array = []
             for timecoded_data in timecoded_data_set:
-            	if (timecoded_data.timecoded_comment.user.pk == self.scope_ids.user_id):
-            		writer.writerow([timecoded_data.seconds, timecoded_data.content, self.scope_ids.user_id , timecoded_data.id])
+                if (timecoded_data.timecoded_comment.user.pk == self.scope_ids.user_id):
+                    writer.writerow([timecoded_data.seconds, timecoded_data.content, self.scope_ids.user_id , timecoded_data.id])
             
             return res
         except KNoteList.DoesNotExist:
             res.status = 404
             return Response()
+
+    def __get_xblock_key(self):
+        """
+            more info at : https://groups.google.com/forum/#!topic/edx-xblock/78jOyuT0ozA
+        """
+        return self.scope_ids.usage_id
 
     @staticmethod
     def workbench_scenarios():

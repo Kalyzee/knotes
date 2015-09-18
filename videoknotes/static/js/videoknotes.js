@@ -12,7 +12,8 @@ function VideoKNotesBlock(runtime, element, init_args) {
             "video"     :  init_args.video,
             "element"   :  element,
             "notes"     : init_args.notes,
-            "onExportNotes" : _this.exportNotes
+            "onExportNotes" : _this.exportNotes,
+            "can_publish": init_args.can_publish
         });
 
 

@@ -94,7 +94,11 @@ function KNotesView(element){
 
       toolBar.appendChild(createButton("Modifier", "fa-edit", "btn-update", function(){
         fireUpdateNote(note);
-      }));;
+      }));
+
+      toolBar.appendChild(createButton("Modifier", "fa-eye", "btn-public", function(){
+        firePublicNote(note);
+      }));      
 
       toolBar.appendChild(createButton("Supprimer", "fa-remove", "btn-delete", function(){
         fireRemoveNote(note);
@@ -239,7 +243,24 @@ function KNotesView(element){
       listeners.fireListeners("onExportNotes", function(callback){
         callback();
       });
-    }        
+    }      
+
+    /*
+    * Method called when the user click on download button
+    */
+    var firePublicNote = function(){
+      listeners.fireListeners("onPublicNote", function(callback){
+        callback();
+      });
+    } 
+
+    /*
+    * Method to add a callback when the user click on download button
+    */
+    this.onPublicNote = function(callback){
+      listeners.addlisteners("onPublicNote", callback);
+    }
+
 
 
 

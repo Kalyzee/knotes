@@ -30,7 +30,7 @@ function KNotesPlugin(config){
 
         var _this = this,
             _player = null,
-            _view = new KNotesView(element),
+            _view = new KNotesView(element, config.can_publish),
             _list = null,
             _currentNote = null;
 

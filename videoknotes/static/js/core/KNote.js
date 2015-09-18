@@ -10,7 +10,8 @@ function KNote(id, time, value){
       _time = time,
       _value = value,
       _active = false;
-
+      _isPublic = false;
+      _isMine = false;
 
     /**
     * SETTERS AND GETTERS
@@ -67,6 +68,23 @@ function KNote(id, time, value){
     this.isActive = function(){
       return _active;
     }
+
+
+    this.isPublic = function(){
+      return _isPublic;
+    }
+
+    this.setPublic = function(isPublic){
+      _isPublic = isPublic;
+    }
+
+    this.isMine = function(){
+      return _isMine;
+    }
+
+    this.setIsMine = function(isMine){
+      _isMine = isMine;
+    }    
 
     /*
     * Method called when a user click on delete note button
