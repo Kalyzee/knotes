@@ -50,7 +50,7 @@ function KNotesPlugin(config){
         var array = [];
         for ( n in config.notes){
             var note = config.notes[n];
-            array.push(new KNote(note.id, note.time, note.value));
+            array.push(new KNote(note.id, note.time, note.value, note.public, note.mine));
         }
 
         _list = new KNotesList(array);
@@ -77,7 +77,7 @@ function KNotesPlugin(config){
                     });
                 }
             }else{
-                var note = new KNote(-1, Math.floor(_player.getCurrentTime()), note.value);
+                var note = new KNote(-1, Math.floor(_player.getCurrentTime()), note.value, false, true);
                 if(config.onNewNote){
                     config.onNewNote(note, function(result){
                     if(result.result = "success"){
@@ -113,6 +113,18 @@ function KNotesPlugin(config){
                 config.onRemoveNote(note, function(){
                     _list.remove(note);
                 });
+            }
+
+        });
+
+        _view.onPublicNote(function(note){
+            if(config.onPublishNote){
+                var note = _list.getById(note.id);
+                note.setPublic(!note.isPublic());
+                config.onPublishNote(note, function(){
+                    _view.updatePublicNoteById(note.getId(), note.isPublic());
+                }); 
+
             }
 
         });
@@ -156,7 +168,7 @@ function KNotesPlugin(config){
         var i = 0;
         while(iterator.hasNext()){
             var note = iterator.next();
-            _view.createNote({"value" : note.getValue(), "id": note.getId(), "time": note.getTime(), "active" : note.isActive()});
+            _view.createNote({"value" : note.getValue(), "id": note.getId(), "time": note.getTime(), "active" : note.isActive(), "mine" : note.isMine(), "public": note.isPublic() });
             i++;
         }        
     }

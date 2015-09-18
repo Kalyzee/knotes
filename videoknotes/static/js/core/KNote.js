@@ -2,7 +2,7 @@
 * Knote Model
 *
 */
-function KNote(id, time, value){
+function KNote(id, time, value, public, mine){
    
   var listeners = new KNotesListener(),
       _this = this,
@@ -10,8 +10,8 @@ function KNote(id, time, value){
       _time = time,
       _value = value,
       _active = false;
-      _isPublic = false;
-      _isMine = false;
+      _isPublic = public;
+      _isMine = mine;
 
     /**
     * SETTERS AND GETTERS

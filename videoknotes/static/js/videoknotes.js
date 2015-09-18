@@ -13,6 +13,7 @@ function VideoKNotesBlock(runtime, element, init_args) {
             "element"   :  element,
             "notes"     : init_args.notes,
             "onExportNotes" : _this.exportNotes,
+            "onPublishNote" : _this.publish,
             "can_publish": init_args.can_publish
         });
 
@@ -37,9 +38,20 @@ function VideoKNotesBlock(runtime, element, init_args) {
 
     }
 
-    this.remove = function(note, callback){
-      console.log(note);
+    this.publish = function(note, callback){
+      $.ajax({
+          type: "POST",
+          url: runtime.handlerUrl(element, 'publish_notes'),
+          data: JSON.stringify({"pk":note.getId(), "public":note.isPublic()}),
+          success: function(result) {
+            if(callback){
+              callback(result);
+            }
+          }
+      });
+    }
 
+    this.remove = function(note, callback){
       $.ajax({
           type: "POST",
           url: runtime.handlerUrl(element, 'delete_notes'),

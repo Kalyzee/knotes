@@ -2,7 +2,7 @@
 * Knotes View
 *
 */
-function KNotesView(element){
+function KNotesView(element, canPublish){
     
     var listeners = new KNotesListener();
     var _this = this;
@@ -46,11 +46,22 @@ function KNotesView(element){
     }
 
     this.updateNoteById = function(id, text){
-      $(".comment[data-id="+id+"] .comment-part").html(text);
+      $(_element).find(".comment[data-id="+id+"] .comment-part").html(text);
     }
 
     this.removeNoteById = function(id){
-      $(".comment[data-id="+id+"]").remove();
+      $(_element).find(".comment[data-id="+id+"]").remove();
+    }
+
+    this.updatePublicNoteById = function(id, public){
+      $(_element).find(".comment[data-id="+id+"] .btn-public i.fa-eye").removeClass("fa-eye");
+      $(_element).find(".comment[data-id="+id+"] .btn-public i.fa-eye-slash").removeClass("fa-eye-slash");
+
+      if (public){
+          $(_element).find(".comment[data-id="+id+"] .btn-public i.fa").addClass("fa-eye-slash");
+      }else{
+        $(_element).find(".comment[data-id="+id+"] .btn-public i.fa").addClass("fa-eye");
+      }
     }
 
     /**
@@ -88,21 +99,36 @@ function KNotesView(element){
       var toolBar           = document.createElement("div");
       toolBar.setAttribute("class", "tool-part part");
 
-      toolBar.appendChild(createButton("Lire", "fa-play", "btn-play", function(){
+      toolBar.appendChild(createButton("Play", "fa-play", "btn-play", function(){
         firePlayNote(note);
       }));
 
-      toolBar.appendChild(createButton("Modifier", "fa-edit", "btn-update", function(){
-        fireUpdateNote(note);
-      }));
+      if (note.mine){
 
-      toolBar.appendChild(createButton("Modifier", "fa-eye", "btn-public", function(){
-        firePublicNote(note);
-      }));      
+        toolBar.appendChild(createButton("Edit", "fa-edit", "btn-update", function(){
+          fireUpdateNote(note);
+        }));
+  
+        toolBar.appendChild(createButton("Delete", "fa-remove", "btn-delete", function(){
+          fireRemoveNote(note);
+        }));
 
-      toolBar.appendChild(createButton("Supprimer", "fa-remove", "btn-delete", function(){
-        fireRemoveNote(note);
-      }));
+
+      }
+
+
+      if (canPublish){
+        if (note.public){
+          toolBar.appendChild(createButton("Public", "fa-eye-slash", "btn-public", function(){
+            firePublicNote(note);
+          }));  
+        }else{
+          toolBar.appendChild(createButton("Public", "fa-eye", "btn-public", function(){
+            firePublicNote(note);
+          }));    
+        }
+   
+      }
 
       return toolBar;
     }
@@ -248,9 +274,9 @@ function KNotesView(element){
     /*
     * Method called when the user click on download button
     */
-    var firePublicNote = function(){
+    var firePublicNote = function(note){
       listeners.fireListeners("onPublicNote", function(callback){
-        callback();
+        callback(note);
       });
     } 
 

@@ -56,7 +56,7 @@ class VideoKNotesBlock(XBlock):
         for timecoded_data in timecoded_data_set:
             """Convert Knote objects (python) to Knote objects (Javascript) """
             
-            obj = {"time": timecoded_data.seconds, "value":timecoded_data.content, "user": self.scope_ids.user_id , "datetime": "2015-12-10", "is_public": timecoded_data.is_public, "is_mine": (self.scope_ids.user_id == timecoded_data.timecoded_comment.user.pk) , "id": timecoded_data.id}
+            obj = {"time": timecoded_data.seconds, "value":timecoded_data.content, "user": self.scope_ids.user_id , "datetime": "2015-12-10", "public": timecoded_data.is_public, "mine": (self.scope_ids.user_id == timecoded_data.timecoded_comment.user.pk) , "id": timecoded_data.id}
             timecoded_data_array.append(obj)
 
 
@@ -134,6 +134,22 @@ class VideoKNotesBlock(XBlock):
         timecoded = KNote.objects.get(pk=data.get("pk"))
         if (timecoded.timecoded_comment.user.pk == self.scope_ids.user_id):
             timecoded.content = data.get("content")
+            timecoded.save()
+            return {'result': 'success'}
+        else :
+            return {'error': 'bad credential'}
+
+    @XBlock.json_handler
+    def publish_notes(self, data, suffix=''):
+        """
+        """
+        student = User.objects.get(id=self.scope_ids.user_id)
+        timecoded = KNote.objects.get(pk=data.get("pk"))
+        if ((timecoded.timecoded_comment.user.pk == self.scope_ids.user_id) and (has_studio_write_access(student, self.scope_ids.usage_id.course_key))):
+            is_public = False
+            if (data.get("public") == "true"):
+                is_public = True
+            timecoded.is_public = data.get("public")
             timecoded.save()
             return {'result': 'success'}
         else :
