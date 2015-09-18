@@ -81,22 +81,33 @@ Login
 
 To enable this KNotes into your course you have to :
   - On a studio course main page go to Setting > Advanced Settings.
+  
 ![](http://www.kalyzee.com/wp-content/uploads/2015/09/edx-advanced-setting-enabling-knotes.png)
+
   - Into the advanced module part, add "videoknotes" into the array.
+
+  
 ![](http://www.kalyzee.com/wp-content/uploads/2015/09/edx-advanced-setting-enabling-knotes-in-form.png)
+
   - Click on "Save changes"
+
 ![](http://www.kalyzee.com/wp-content/uploads/2015/09/edx-knotes-visual-feedback-installation.png)
 
 ## Using Knotes 
 In a unit : 
+
 ![](http://www.kalyzee.com/wp-content/uploads/2015/09/edx-knotes-usage-plugin-selection.png)
+
 Click on the advanced button in add new component.
 
 ![](http://www.kalyzee.com/wp-content/uploads/2015/09/edx-knotes-selection-unit.png)
+
 Click on videoknotes
+
 ![](http://www.kalyzee.com/wp-content/uploads/2015/09/edx-knotes-preview.png)
 
 Your KNote is fully loaded you can change your video by cliking on edit button on the top right of the previous picture.
+
 ![](http://www.kalyzee.com/wp-content/uploads/2015/09/edx-knotes-select-video-url.png)
 
 In this version Youtube and Dailymotion are enable it's possible to develop another player components.
