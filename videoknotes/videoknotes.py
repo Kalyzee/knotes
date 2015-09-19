@@ -1,26 +1,64 @@
+# -*- coding: utf-8 -*-
+
+
+"""
+    KNote by Kalyzee
+
+    Xblock for openedx plateform which allow students taking notes from video. 
+
+    
+    KNote Team (Alphabetical order) : 
+        - Stephane Barbati  <stephane.barbati@kalyzee.com>
+        - Ludovic Bouguerra <ludovic.bouguerra@kalyzee.com>
+        - Anthony Gross     <anthony.gross@kalyzee.com>
+        - Guillaume Laurie  <guillaume.laurie34@gmail.com>
+        - Christian Surace  <christian.surace@kalyzee.com>        
+        
+        
+"""
+
 import pkg_resources
 
-from pprint import pprint
-
+"""
+    XBlock api import
+"""
 from xblock.core import XBlock
-from xblock.fields import Scope, Integer, String
+from xblock.fields import Scope, String
+from xblock.fragment import Fragment
 
+
+"""
+    OpenEdx ACL import
+"""
 from student.auth import has_studio_write_access
 
-from xblock.fragment import Fragment
+
+"""
+    Django models import
+"""
 from django.contrib.auth.models import User
 
-import csv
+
+"""
+"""
 from webob import Response
 
-from django.db.models import Q
+"""
+     ReportLab imports
+"""
+from reportlab.lib.styles import ParagraphStyle
+from reportlab.lib import colors
+from reportlab.pdfgen import canvas
+from reportlab.lib.units import mm
+from reportlab.platypus import Table, TableStyle, Paragraph
 
+
+"""
+    KNotes model import
+"""
 from .models import KNoteList, KNote
-import json
-import functools
-import hashlib
 
-from pprint import pprint
+
 
 class VideoKNotesBlock(XBlock):
     """
@@ -30,33 +68,26 @@ class VideoKNotesBlock(XBlock):
     Student can comment as private.
     """
 
+
+    """Video URL
+    """ 
     href = String(help="Video URL", default="http://www.dailymotion.com/video/x2e4j6u", scope=Scope.content)
 
     def student_view(self, context):
         """
         Show all knotes for the current user and the owner(s) which are in public state.
         """
-        print "HELLO"
-        pprint(self.scope_ids.usage_id)
+        student = self.__get_current_user()
 
-        student = User.objects.get(id=self.scope_ids.user_id)
+        comment = KNoteList.objects.get_or_create_note_list(student, self.__get_xblock_key())
 
-        comment = None
-        #KNoteList.objects.get(student=student, block=self.scope_ids.def_id.block_id).delete()
-        """ Try to find the last KnoteList or create one """
-        try:
-            comment = KNoteList.objects.get(user=student, block=self.__get_xblock_key())
-        except KNoteList.DoesNotExist:
-            comment = KNoteList(user=student, block=self.__get_xblock_key())
-            comment.save()
             
         """Find all knotes ordered by seconds"""
-        timecoded_data_set = KNote.objects.filter( Q(timecoded_comment=comment) | (Q(is_public=True) & Q(timecoded_comment__block=self.__get_xblock_key()))).order_by("seconds")
+        timecoded_data_set = self.__list_notes()
         timecoded_data_array = []
         for timecoded_data in timecoded_data_set:
             """Convert Knote objects (python) to Knote objects (Javascript) """
-            
-            obj = {"time": timecoded_data.seconds, "value":timecoded_data.content, "user": self.scope_ids.user_id , "datetime": "2015-12-10", "public": timecoded_data.is_public, "mine": (self.scope_ids.user_id == timecoded_data.timecoded_comment.user.pk) , "id": timecoded_data.id}
+            obj = {"time": timecoded_data.seconds, "value":timecoded_data.content, "user": self.scope_ids.user_id , "public": timecoded_data.is_public, "mine": (self.scope_ids.user_id == timecoded_data.timecoded_comment.user.pk) , "id": timecoded_data.id}
             timecoded_data_array.append(obj)
 
 
@@ -115,7 +146,9 @@ class VideoKNotesBlock(XBlock):
 
     @XBlock.json_handler
     def post_notes(self, data, suffix=''):
-        student = User.objects.get(id=self.scope_ids.user_id)
+        """Publish a note
+        """         
+        student = self.__get_current_user()
         timecoded = KNoteList.objects.get(user=student, block=self.__get_xblock_key())
 
         if (timecoded.user.pk == self.scope_ids.user_id):
@@ -128,9 +161,8 @@ class VideoKNotesBlock(XBlock):
 
     @XBlock.json_handler
     def update_notes(self, data, suffix=''):
-        """
-        Called upon completion of the video.
-        """
+        """Update a note
+        """ 
         timecoded = KNote.objects.get(pk=data.get("pk"))
         if (timecoded.timecoded_comment.user.pk == self.scope_ids.user_id):
             timecoded.content = data.get("content")
@@ -141,9 +173,9 @@ class VideoKNotesBlock(XBlock):
 
     @XBlock.json_handler
     def publish_notes(self, data, suffix=''):
-        """
-        """
-        student = User.objects.get(id=self.scope_ids.user_id)
+        """Make a note public only for the teacher
+        """ 
+        student = self.__get_current_user()
         timecoded = KNote.objects.get(pk=data.get("pk"))
         if ((timecoded.timecoded_comment.user.pk == self.scope_ids.user_id) and (has_studio_write_access(student, self.scope_ids.usage_id.course_key))):
             is_public = False
@@ -158,9 +190,10 @@ class VideoKNotesBlock(XBlock):
 
     @XBlock.json_handler
     def delete_notes(self, data, suffix=''):
-        """
-        Called upon completion of the video.
-        """
+        """Delete a given note
+
+
+        """ 
         timecoded = KNote.objects.get(pk=data.get("pk"))
         if (timecoded.timecoded_comment.user.pk == self.scope_ids.user_id):
             timecoded.delete()
@@ -170,35 +203,66 @@ class VideoKNotesBlock(XBlock):
         
     @XBlock.handler
     def export_notes(self, request, suffix=''):
-        """
-        Called upon completion of the video.
-        """
+        """ Return an pdf export of user and public notes
+
+        Returns:
+            response
+
+        """ 
         res = Response()
-        student = User.objects.get(id=self.scope_ids.user_id)
+        student = self.__get_current_user()
 
-        comment = None
-        #KNoteList.objects.get(student=student, block=self.scope_ids.def_id.block_id).delete()
-        """ Try to find the last KnoteList or create one """
         try:
-            comment = KNoteList.objects.get(user=student, block=self.scope_ids.def_id.block_id)
-
-            res.headerlist = [('Content-type', 'application/force-download'), ('Content-Disposition', 'attachment; filename=%s' % str(self.scope_ids.user_id)+".csv")]
-            writer = csv.writer(res)
-            
-            timecoded_data_set = comment.knote_set.order_by("seconds")
+            timecoded_data_set = self.__list_notes()
             timecoded_data_array = []
+
             for timecoded_data in timecoded_data_set:
-                if (timecoded_data.timecoded_comment.user.pk == self.scope_ids.user_id):
-                    writer.writerow([timecoded_data.seconds, timecoded_data.content, self.scope_ids.user_id , timecoded_data.id])
+                timecoded_data_array.append([timecoded_data.seconds, Paragraph(timecoded_data.content.replace('\n','<br />'), ParagraphStyle("Page"))])
+
+
+            res.headerlist = [('Content-type', 'application/pdf'), ('Content-Disposition', 'attachment; filename=%s' % str(self.scope_ids.user_id)+".pdf")]
+            p = canvas.Canvas(res)
+            table = Table(timecoded_data_array, colWidths=[20, 500])
+            table.setStyle(TableStyle([('INNERGRID', (0, 0), (-1, -1), 0.25, colors.black),
+                                        ('BOX', (0, 0), (-1, -1), 0.25, colors.black)]))
             
+            table.wrapOn(p, 700, 700)
+            table.drawOn(p, 50, 700)
+            
+            p.showPage()
+            p.save()
+
             return res
         except KNoteList.DoesNotExist:
             res.status = 404
-            return Response()
+            return res
+
+    def __get_current_user(self):
+        """Return Current User
+
+        Returns:
+            User current user
+
+        """              
+        return User.objects.get(id=self.scope_ids.user_id)
+
+    def __list_notes(self):
+        """Return Both of public notes and user's notes sorted by time
+
+        Returns:
+            KNotes
+
+        """          
+        return KNote.objects.list_notes_public_for_course_and_block( self.scope_ids.user_id ,self.__get_xblock_key())
 
     def __get_xblock_key(self):
-        """
-            more info at : https://groups.google.com/forum/#!topic/edx-xblock/78jOyuT0ozA
+        """Return xblock location key
+
+         more info at : https://groups.google.com/forum/#!topic/edx-xblock/78jOyuT0ozA
+        Returns:
+            KNotes
+
+
         """
         return self.scope_ids.usage_id
 
