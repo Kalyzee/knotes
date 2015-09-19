@@ -155,7 +155,11 @@ function MyPlayerAdapter(element, video){
 
 
 MyPlayerAdapter.isCompatible = function(videoURL){
-
+  /**
+  * Must return true if the videoURL is compatible !
+  */
 }
+
+PlayerFactory.registerPlayer(MyPlayerAdapter);
 ```
 
