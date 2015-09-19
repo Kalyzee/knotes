@@ -163,3 +163,6 @@ MyPlayerAdapter.isCompatible = function(videoURL){
 PlayerFactory.registerPlayer(MyPlayerAdapter);
 ```
 
+You have to register your JS file in student_view method in videoknotes.py in javascript_array variable
+
+
