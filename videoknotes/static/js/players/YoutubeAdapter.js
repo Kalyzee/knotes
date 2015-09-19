@@ -84,3 +84,12 @@ function YoutubeAdapter(element, video){
         }
     }
 }
+
+YoutubeAdapter.regExp = /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#\&\?]*).*/
+
+YoutubeAdapter.isCompatible = function(videoURL){
+    var is_youtube          = videoURL.match(YoutubeAdapter.regExp);
+    return is_youtube && is_youtube[7].length===11;
+}
+
+PlayerFactory.registerPlayer(YoutubeAdapter);

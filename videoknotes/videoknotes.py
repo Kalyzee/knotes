@@ -104,8 +104,8 @@ class VideoKNotesBlock(XBlock):
 
 
         javascript_array = ["static/js/core/KNotesListener.js", "static/js/core/KNote.js", 
-            "static/js/core/KNotesIterator.js", "static/js/core/KNotesList.js", "static/js/players/DailymotionAdapter.js",
-            "static/js/players/YoutubeAdapter.js", "static/js/players/PlayerFactory.js",
+            "static/js/core/KNotesIterator.js", "static/js/core/KNotesList.js", "static/js/players/PlayerFactory.js", "static/js/players/DailymotionAdapter.js",
+            "static/js/players/YoutubeAdapter.js",
             "static/js/core/KNotesView.js", "static/js/core/KNotesPlugin.js", 
             "static/vendors/swfobject.js"]
 
@@ -222,13 +222,14 @@ class VideoKNotesBlock(XBlock):
 
             res.headerlist = [('Content-type', 'application/pdf'), ('Content-Disposition', 'attachment; filename=%s' % str(self.scope_ids.user_id)+".pdf")]
             p = canvas.Canvas(res)
-            table = Table(timecoded_data_array, colWidths=[20, 500])
-            table.setStyle(TableStyle([('INNERGRID', (0, 0), (-1, -1), 0.25, colors.black),
-                                        ('BOX', (0, 0), (-1, -1), 0.25, colors.black)]))
-            
-            table.wrapOn(p, 700, 700)
-            table.drawOn(p, 50, 700)
-            
+            if (len(timecoded_data_array)>0):
+                table = Table(timecoded_data_array, colWidths=[20, 500])
+                table.setStyle(TableStyle([('INNERGRID', (0, 0), (-1, -1), 0.25, colors.black),
+                                            ('BOX', (0, 0), (-1, -1), 0.25, colors.black)]))
+                
+                table.wrapOn(p, 700, 700)
+                table.drawOn(p, 50, 700)
+                
             p.showPage()
             p.save()
 
@@ -273,7 +274,7 @@ class VideoKNotesBlock(XBlock):
             ("videoknotes",
             """
             <vertical_demo>
-                <videoknotes href="https://vimeo.com/46100581" />
+                <videoknotes href="http://www.dailymotion.com/video/x2e4j6u" />
             </vertical_demo>
             """)
         ]

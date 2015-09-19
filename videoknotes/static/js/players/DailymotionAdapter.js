@@ -69,6 +69,11 @@ function DailymotionAdapter(element, video){
 
 
 DailymotionAdapter.regExp = "[[http|https]://]{0,1}www.dailymotion.com\/video\/(.+)"
-DailymotionAdapter.isCompatible = function(videoURL){
 
+DailymotionAdapter.isCompatible = function(videoURL){
+            is_dailymotion      = videoURL.match(DailymotionAdapter.regExp);
+            return is_dailymotion;
+            
 }
+
+PlayerFactory.registerPlayer(DailymotionAdapter);
