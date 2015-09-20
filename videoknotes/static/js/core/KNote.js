@@ -21,8 +21,8 @@ function KNote(id, time, value, public, mine){
       _id = id,
       _time = time,
       _value = value,
-      _active = false;
-      _isPublic = public;
+      _active = false,
+      _isPublic = public,
       _isMine = mine;
 
     /**
