@@ -29,7 +29,7 @@ function DailymotionAdapter(element, video){
 
 
     var listeners = new KNotesListener(),
-        _this = this;
+        _this = this,
         player = null;
         
     this.getCurrentTime = function(){
