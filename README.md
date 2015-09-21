@@ -1,14 +1,14 @@
 # KNotes
 
-This XBLock allows student taking notes from video. 
+Knotes is a Plugin Open edX XBLock to take notes when watching videos. 
 
 ![](http://www.kalyzee.com/wp-content/uploads/2015/06/CGQ-VDNWgAAYd3F.png)
 
-This readme explains how to deploy KNotes in devstack environment. We assume you have latest devstack from edx installed and vagrant configured (and launched). More information available at : https://github.com/edx/configuration/wiki/edX-Developer-Stack
+This readme explains how to deploy Knotes in devstack environment. We assume you have latest devstack from edX installed and vagrant configured (and launched). More information available at: https://github.com/edx/configuration/wiki/edX-Developer-Stack
 
 # Installation guide
 
-Connect you to your VM with :
+Connect you to your VM with:
 ```
 vagrant ssh.
 ```
@@ -19,7 +19,7 @@ Connect you with edxapp user
 sudo su edxapp
 ```
 
-Now we are going to create an apps directory in /edx/app/edxapp which will store the knotes app
+Create an apps directory in /edx/app/edxapp to store the Knotes app
 - In /edx/app/edxapp with edxapp user create a directory my-apps
 
 ``` 
@@ -28,12 +28,12 @@ Now we are going to create an apps directory in /edx/app/edxapp which will store
  cd my-apps
 ```
 
-Now we will clone the knotes github repository in /edx/app/edxapp/my-apps
+Clone the Knotes github repository in /edx/app/edxapp/my-apps
 ``` 
 git clone https://github.com/Kalyzee/knotes.git
 ``` 
 
-We activate the openedx venv and installing knotes
+Activate the openedx venv and install Knotes
 ```
 source /edx/app/edxapp/venvs/edxapp/bin/activate
 cd knotes
@@ -59,7 +59,7 @@ cd /edx/app/edxapp/edx-platform
 ./manage.py lms syncdb --settings=devstack
 ```
 
-The first output's lines will looks like that :
+The first output's lines will look like that:
 
 Syncing...
 Creating tables ...
@@ -79,7 +79,7 @@ Restart your edx
 
 Login 
 
-To enable this KNotes into your course you have to :
+To enable this Knotes into your course you have to:
   - On a studio course main page go to Setting > Advanced Settings.
   
 ![](http://www.kalyzee.com/wp-content/uploads/2015/09/edx-advanced-setting-enabling-knotes.png)
@@ -94,7 +94,7 @@ To enable this KNotes into your course you have to :
 ![](http://www.kalyzee.com/wp-content/uploads/2015/09/edx-knotes-visual-feedback-installation.png)
 
 ## Using Knotes 
-In a unit : 
+In a unit: 
 
 ![](http://www.kalyzee.com/wp-content/uploads/2015/09/edx-knotes-usage-plugin-selection.png)
 
@@ -106,7 +106,7 @@ Click on videoknotes
 
 ![](http://www.kalyzee.com/wp-content/uploads/2015/09/edx-knotes-preview.png)
 
-Your KNote is fully loaded you can change your video by cliking on edit button on the top right of the previous picture.
+Your Knote is fully loaded you can change your video by cliking on edit button on the top right of the previous picture.
 
 ![](http://www.kalyzee.com/wp-content/uploads/2015/09/edx-knotes-select-video-url.png)
 
