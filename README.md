@@ -42,7 +42,7 @@ pip install -r requirements.txt
 
 ## Database configuration / installation
 
-You have to add into edx settings file 
+You have to add into edX settings file 
  
 For dev environment you have to add at the end of /edx/app/edxapp/edx-platform/cms/envs/devstack.py and  /edx/app/edxapp/edx-platform/lms/envs/devstack.py
 
