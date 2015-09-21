@@ -1,8 +1,19 @@
 /**
-    
-    KNote by Kalyzee
 
-    Xblock for openedx plateform which allow students taking notes from video. 
+    This file is part of Knotes.
+
+    Knotes is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Knotes is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Knotes.  If not, see <http://www.gnu.org/licenses/>.
 
     
     KNote Team (Alphabetical order) : 
@@ -51,6 +62,9 @@ function KNotesList(initialValues){
     this.remove = function(note){
         delete _objectsById[note.getId()];
         _list[note.getTime()].splice(_list[note.getTime()].indexOf(note), 1);
+        if (_list[note.getTime()].length == 0){
+            delete _list[note.getTime()];
+        }
         fireRemove(note);
     }
 
@@ -83,7 +97,7 @@ function KNotesList(initialValues){
         var result = [];
         var i;
         beginValue = Math.max(0,timeBegin-period);
-        for (i = beginValue; i<=timeBegin+period; i++){
+        for (i = beginValue; i<=timeBegin; i++){
             var resultAtTime = _this.getByTime(i);
             if (resultAtTime !== null ){
                  result = result.concat(resultAtTime);
