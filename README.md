@@ -42,9 +42,8 @@ pip install -r requirements.txt
 
 ## Database configuration / installation
 
-You have to add into edX settings file 
  
-For dev environment you have to add at the end of /edx/app/edxapp/edx-platform/cms/envs/devstack.py and  /edx/app/edxapp/edx-platform/lms/envs/devstack.py
+For dev environment you have to append the following lines into /edx/app/edxapp/edx-platform/cms/envs/devstack.py and  /edx/app/edxapp/edx-platform/lms/envs/devstack.py 
 
 ```python
 
@@ -52,7 +51,7 @@ INSTALLED_APPS += ('videoknotes',)
 
 ```
 
-After that it's necessary to setup database.
+After that it's necessary to setup the database.
 
 ```
 cd /edx/app/edxapp/edx-platform
@@ -70,7 +69,7 @@ Installing indexes ...
 Installed 0 object(s) from 0 fixture(s)
 
 
-Restart your edx
+Restart your edX
 ```
  cd /edx/app/edxapp/edx-platform
  paver devstack --fast studio
