@@ -1,6 +1,6 @@
-# KNotes
+# Knotes
 
-Knotes is a Plugin Open edX XBLock to take notes when watching videos. 
+Knotes is a Open edX Plugin (XBLock) to take notes when watching videos. 
 
 ![](http://www.kalyzee.com/wp-content/uploads/2015/06/CGQ-VDNWgAAYd3F.png)
 
